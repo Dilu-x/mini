@@ -29,7 +29,8 @@ const SETTINGS_MENU = [
     items: [
       { num: "2.1", label: "Anti Call",    key: "ANTI_CALL",   options: ["on", "off"] },
       { num: "2.2", label: "Anti Delete",  key: "ANTI_DELETE", options: ["on", "off", "inbox", "same"] },
-      { num: "2.3", label: "Anti Fake",    key: "ANTI_FAKE",   options: ["on", "off"] },
+      { num: "2.3", label: "Anti Edit",    key: "ANTI_EDIT",   options: ["on", "off"] },
+      { num: "2.4", label: "Anti Fake",    key: "ANTI_FAKE",   options: ["on", "off"] },
     ]
   },
   {
@@ -201,6 +202,24 @@ cmd({
     await setSetting(sender, 'ANTI_DELETE', val);
     const icon = {on:'✅',off:'❌',inbox:'📥',same:'💬'};
     reply(`${icon[val]} *Anti Delete* → *${val.toUpperCase()}*`);
+  } catch(e) { reply(`❌ Error: ${e.message}`); }
+});
+
+cmd({
+  pattern: "antiedit",
+  desc: "Anti-edit: on | off",
+  category: "settings", react: "✏️", filename: __filename
+}, async (conn, mek, m, { sender, args, reply }) => {
+  try {
+    await ensureLoaded(sender);
+    const val = args[0]?.toLowerCase();
+    if (val === 'on' || val === 'off') {
+      await setSetting(sender, 'ANTI_EDIT', val);
+      reply(`${val==='on'?'✅':'❌'} *Anti Edit* → *${val.toUpperCase()}*`);
+    } else {
+      const nv = await toggleSetting(sender, 'ANTI_EDIT');
+      reply(`${nv==='on'?'✅':'❌'} *Anti Edit* toggled → *${nv.toUpperCase()}*`);
+    }
   } catch(e) { reply(`❌ Error: ${e.message}`); }
 });
 

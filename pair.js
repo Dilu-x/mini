@@ -64,6 +64,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const activeSockets = {};
 const keepAliveTimers = {};
+const presenceTimers = {};
 const reconnectTimers = {};
 const fileCache = {};
 const saveDebounceTimers = {};
@@ -73,6 +74,7 @@ const deletedMsgStore = new Map();
 
 function cleanupSession(sessionId) {
     if (keepAliveTimers[sessionId]) { clearInterval(keepAliveTimers[sessionId]); delete keepAliveTimers[sessionId]; }
+    if (presenceTimers[sessionId]) { clearInterval(presenceTimers[sessionId]); delete presenceTimers[sessionId]; }
     if (reconnectTimers[sessionId]) { clearTimeout(reconnectTimers[sessionId]); delete reconnectTimers[sessionId]; }
     if (saveDebounceTimers[sessionId]) { clearTimeout(saveDebounceTimers[sessionId]); delete saveDebounceTimers[sessionId]; }
     const sock = activeSockets[sessionId];
@@ -283,17 +285,26 @@ async function Pair(number, res = null) {
             const { connection, lastDisconnect } = update;
             if (connection === 'close') {
                 const statusCode = lastDisconnect?.error?.output?.statusCode;
-                const isLoggedOut = statusCode === DisconnectReason.loggedOut;
+                const isLoggedOut = statusCode === DisconnectReason.loggedOut || statusCode === 401;
                 console.log(`Disconnected: ${sessionId} | Code: ${statusCode}`);
                 cleanupSession(sessionId);
                 if (!isLoggedOut) {
                     reconnectTimers[sessionId] = setTimeout(() => Pair(number), 5000);
                 } else {
-                    await Session.findOneAndDelete({ sessionId });
-                    await fs.remove(sessionPath);
+                    try {
+                        await Session.findOneAndDelete({ sessionId });
+                        await fs.remove(sessionPath);
+                        console.log(`[LOGOUT] Session removed for ${sessionId}`);
+                    } catch (cleanupErr) {
+                        console.error('[LOGOUT CLEANUP ERROR]', cleanupErr);
+                    }
                 }
             } else if (connection === 'open') {
                 console.log('✅ 𝐂onnected:', sessionId);
+                if (keepAliveTimers[sessionId]) {
+                    clearInterval(keepAliveTimers[sessionId]);
+                    delete keepAliveTimers[sessionId];
+                }
                 keepAliveTimers[sessionId] = setInterval(async () => {
                     if (!activeSockets[sessionId]) { clearInterval(keepAliveTimers[sessionId]); delete keepAliveTimers[sessionId]; return; }
                     sock.sendPresenceUpdate('available', sock.user.id).catch(() => {
@@ -332,28 +343,55 @@ async function Pair(number, res = null) {
                 // ════════════════════════════════════════════════════════════
                 if (mek.key && mek.key.remoteJid === 'status@broadcast') {
                     const statusSender = mek.key.participant || mek.key.remoteJid;
+                    const botJid = sock.user.id.split(':')[0] + '@s.whatsapp.net';
                     await ensureSettingsLoaded(statusSender);
+                    await ensureSettingsLoaded(botJid);
 
                     // Auto View Status
-                    if (getSetting(statusSender, 'AUTO_VIEW_STATUS') === 'on') {
-                        await sock.readMessages([mek.key]);
-                        console.log(`👁️ Auto viewed status from: ${statusSender}`);
+                    if (getSetting(botJid, 'AUTO_VIEW_STATUS') === 'on') {
+                        try {
+                            console.log(`🔍 Attempting AUTO_VIEW for ${botJid} on status from ${statusSender}...`);
+                            await sock.readMessages([mek.key]);
+                            console.log(`✅ 👁️ Auto viewed status from: ${statusSender}`);
+                        } catch (err) {
+                            console.error(`❌ AUTO_VIEW_STATUS failed for ${botJid}:`, err.message);
+                        }
                     }
 
                     // Status React (custom emoji)
-                    const reactEmoji = getSetting(statusSender, 'STATUS_REACT');
+                    let reactEmoji = getSetting(botJid, 'STATUS_REACT');
+                    if (reactEmoji === 'on' || reactEmoji === 'emoji') {
+                        reactEmoji = (config.REACT_EMOJIS && config.REACT_EMOJIS.length > 0)
+                            ? config.REACT_EMOJIS[0]
+                            : '❤️';
+                    }
+                    console.log(`🎯 STATUS_REACT retrieved for ${botJid}: '${reactEmoji}'`);
                     if (reactEmoji && reactEmoji !== 'off') {
-                        await sock.sendMessage(mek.key.remoteJid, {
-                            react: { text: reactEmoji, key: mek.key }
-                        });
-                        console.log(`${reactEmoji} Status reacted for: ${statusSender}`);
+                        try {
+                            console.log(`🔍 Attempting STATUS_REACT to ${mek.key.remoteJid} with ${reactEmoji}...`);
+                            const sendResult = await sock.sendMessage(mek.key.remoteJid, {
+                                react: { text: reactEmoji, key: mek.key }
+                            });
+                            console.log(`✅ ${reactEmoji} Status reacted for: ${statusSender} (result:`, sendResult?.status || 'ok', ')');
+                        } catch (err) {
+                            console.error(`❌ STATUS_REACT failed for ${botJid}:`, err.message, 'Stack:', err.stack?.split('\n')[0]);
+                        }
                     }
 
-                    // Auto Like Status (❤️ regardless of STATUS_REACT)
-                    if (getSetting(statusSender, 'AUTO_LIKE_STATUS') === 'on') {
-                        await sock.sendMessage(mek.key.remoteJid, {
-                            react: { text: '❤️', key: mek.key }
-                        });
+                    // Auto Like Status (default heart if enabled)
+                    if (getSetting(botJid, 'AUTO_LIKE_STATUS') === 'on') {
+                        try {
+                            const likeEmoji = (config.AUTO_LIKE_EMOJI && Array.isArray(config.AUTO_LIKE_EMOJI) && config.AUTO_LIKE_EMOJI.length > 0)
+                                ? config.AUTO_LIKE_EMOJI[Math.floor(Math.random() * config.AUTO_LIKE_EMOJI.length)]
+                                : '❤️';
+                            console.log(`🔍 Attempting AUTO_LIKE for ${botJid} on status from ${statusSender}...`);
+                            const likeResult = await sock.sendMessage(mek.key.remoteJid, {
+                                react: { text: likeEmoji, key: mek.key }
+                            });
+                            console.log(`✅ ${likeEmoji} Auto liked status from: ${statusSender} (result:`, likeResult?.status || 'ok', ')');
+                        } catch (err) {
+                            console.error(`❌ AUTO_LIKE_STATUS failed for ${botJid}:`, err.message);
+                        }
                     }
 
                     // Store status messages for anti-delete tracking
@@ -417,19 +455,43 @@ async function Pair(number, res = null) {
                 // ════════════════════════════════════════════════════════════
                 // AUTO REACT — react to incoming messages with custom emoji
                 // ════════════════════════════════════════════════════════════
-                const autoReactEmoji = getSetting(sender, 'AUTO_REACT');
-                if (autoReactEmoji !== 'off' && !isMe && !isReact && body) {
-                    sock.sendMessage(from, {
-                        react: { text: autoReactEmoji, key: mek.key }
-                    }).catch(() => {});
+                let autoReactEmoji = getSetting(sender, 'AUTO_REACT');
+                if (autoReactEmoji === 'on') {
+                    autoReactEmoji = (config.REACT_EMOJIS && config.REACT_EMOJIS.length > 0)
+                        ? config.REACT_EMOJIS[Math.floor(Math.random() * config.REACT_EMOJIS.length)]
+                        : '❤️';
+                }
+                console.log(`🎯 AUTO_REACT retrieved for ${sender}: '${autoReactEmoji}'`);
+                if (autoReactEmoji && autoReactEmoji !== 'off' && !isMe && !isReact && body) {
+                    try {
+                        console.log(`🔍 Attempting AUTO_REACT to ${from} with ${autoReactEmoji}...`);
+                        const reactResult = await sock.sendMessage(from, {
+                            react: { text: autoReactEmoji, key: mek.key }
+                        });
+                        console.log(`✅ ${autoReactEmoji} Auto reacted to message from ${sender} (result:`, reactResult?.status || 'ok', ')');
+                    } catch (err) {
+                        console.error(`❌ AUTO_REACT failed for ${sender}:`, err.message);
+                    }
                 }
 
                 // ════════════════════════════════════════════════════════════
                 // AUTO RECORDING — show recording presence indicator
                 // ════════════════════════════════════════════════════════════
-                if (getSetting(sender, 'AUTO_RECORDING') === 'on' && isCmd) {
-                    sock.sendPresenceUpdate('recording', from).catch(() => {});
-                    setTimeout(() => sock.sendPresenceUpdate('paused', from).catch(() => {}), 3000);
+                const autoRecording = getSetting(sender, 'AUTO_RECORDING');
+                console.log(`🎯 AUTO_RECORDING retrieved for ${sender}: '${autoRecording}'`);
+                if (autoRecording === 'on' && isCmd) {
+                    try {
+                        console.log(`🔍 Attempting AUTO_RECORDING (recording) for ${from}...`);
+                        await sock.sendPresenceUpdate('recording', from);
+                        console.log(`✅ Recording indicator shown`);
+                        setTimeout(() => {
+                            sock.sendPresenceUpdate('paused', from).catch((err) => {
+                                console.error(`❌ AUTO_RECORDING (paused) failed:`, err.message);
+                            });
+                        }, 3000);
+                    } catch (err) {
+                        console.error(`❌ AUTO_RECORDING (recording) failed:`, err.message);
+                    }
                 }
 
                 if (isCmd) await sock.readMessages([mek.key]);
@@ -479,72 +541,105 @@ async function Pair(number, res = null) {
                     default: break;
                 }
 
-            } catch (e) { console.error('[MESSAGE ERROR]', String(e)); }
+            } catch (e) { console.error('[MESSAGE ERROR]', e); }
         });
 
         // ════════════════════════════════════════════════════════════════════
-        // MESSAGES.DELETE — Anti Delete
+        // MESSAGES.DELETE / MESSAGES.UPDATE — Anti Delete
         // ════════════════════════════════════════════════════════════════════
+        async function handleDeletedMessage(keys) {
+            for (const key of keys) {
+                const msgId = key.id;
+                const stored = deletedMsgStore.get(msgId);
+                if (!stored) continue;
+
+                const { mek: originalMek, from: originalFrom } = stored;
+                const deletedBy = key.participant || key.remoteJid || originalFrom;
+
+                await ensureSettingsLoaded(deletedBy);
+                const mode = getSetting(deletedBy, 'ANTI_DELETE');
+                if (mode === 'off') continue;
+
+                let targetJid;
+                if (mode === 'on' || mode === 'same') {
+                    targetJid = originalFrom;
+                } else if (mode === 'inbox') {
+                    targetJid = xnumber + '@s.whatsapp.net';
+                } else {
+                    continue;
+                }
+
+                const senderNum = deletedBy.split('@')[0];
+                const msgText = getMsgText(originalMek.message);
+                const msgType = getContentType(originalMek.message);
+                const caption = `🗑️ *Deleted Message Recovered*\n\n👤 From: @${senderNum}\n📍 Chat: ${originalFrom}\n⏱️ Mode: ${mode.toUpperCase()}`;
+
+                try {
+                    if (['imageMessage', 'videoMessage', 'audioMessage', 'stickerMessage', 'documentMessage'].includes(msgType)) {
+                        await sock.forwardMessage(targetJid, originalMek, true);
+                        await sock.sendMessage(targetJid, { text: caption, mentions: [deletedBy] });
+                    } else {
+                        await sock.sendMessage(targetJid, {
+                            text: `${caption}\n\n💬 Message:\n${msgText || '(no text)'}`,
+                            mentions: [deletedBy]
+                        });
+                    }
+                } catch (fwdErr) {
+                    await sock.sendMessage(targetJid, {
+                        text: `${caption}\n\n💬 Message:\n${msgText || '(media could not be recovered)'}`,
+                        mentions: [deletedBy]
+                    }).catch(() => {});
+                }
+
+                deletedMsgStore.delete(msgId);
+            }
+        }
+
         sock.ev.on('messages.delete', async (item) => {
             try {
-                // item can be { keys: [...] } or { jid, ids: [...] }
                 const keys = item.keys || (item.ids ? item.ids.map(id => ({ id, remoteJid: item.jid })) : []);
-
-                for (const key of keys) {
-                    const msgId = key.id;
-                    const stored = deletedMsgStore.get(msgId);
-                    if (!stored) continue;
-
-                    const { mek: originalMek, from: originalFrom } = stored;
-                    const deletedBy = key.participant || key.remoteJid || originalFrom;
-
-                    // Load settings for the person who deleted
-                    await ensureSettingsLoaded(deletedBy);
-                    const mode = getSetting(deletedBy, 'ANTI_DELETE');
-
-                    if (mode === 'off') continue;
-
-                    // Determine target chat
-                    let targetJid;
-                    if (mode === 'on' || mode === 'same') {
-                        targetJid = originalFrom; // same chat
-                    } else if (mode === 'inbox') {
-                        // Send to bot's own DM (the xnumber)
-                        targetJid = xnumber + '@s.whatsapp.net';
-                    } else {
-                        continue;
-                    }
-
-                    const senderNum = deletedBy.split('@')[0];
-                    const msgText = getMsgText(originalMek.message);
-                    const msgType = getContentType(originalMek.message);
-
-                    let caption = `🗑️ *Deleted Message Recovered*\n\n👤 From: @${senderNum}\n📍 Chat: ${originalFrom}\n⏱️ Mode: ${mode.toUpperCase()}`;
-
-                    // Try to forward original media, fallback to text
-                    try {
-                        if (['imageMessage', 'videoMessage', 'audioMessage', 'stickerMessage', 'documentMessage'].includes(msgType)) {
-                            // Forward the original media message
-                            await sock.forwardMessage(targetJid, originalMek, true);
-                            await sock.sendMessage(targetJid, { text: caption, mentions: [deletedBy] });
-                        } else {
-                            await sock.sendMessage(targetJid, {
-                                text: `${caption}\n\n💬 Message:\n${msgText || '(no text)'}`,
-                                mentions: [deletedBy]
-                            });
-                        }
-                    } catch (fwdErr) {
-                        // Fallback: just send text
-                        await sock.sendMessage(targetJid, {
-                            text: `${caption}\n\n💬 Message:\n${msgText || '(media could not be recovered)'}`,
-                            mentions: [deletedBy]
-                        }).catch(() => {});
-                    }
-
-                    deletedMsgStore.delete(msgId);
-                }
+                await handleDeletedMessage(keys);
             } catch (e) {
                 console.error('[ANTI-DELETE ERROR]', e);
+            }
+        });
+
+        sock.ev.on('messages.update', async (updates) => {
+            try {
+                const deletedKeys = updates
+                    .filter(u => u.update?.message === null)
+                    .map(u => u.key)
+                    .filter(Boolean);
+                if (deletedKeys.length) await handleDeletedMessage(deletedKeys);
+
+                const editedItems = updates
+                    .filter(u => u.update?.message?.editedMessage)
+                    .map(u => ({ key: u.key, edit: u.update.message.editedMessage.message }))
+                    .filter(Boolean);
+
+                for (const item of editedItems) {
+                    try {
+                        const editedBy = item.key.participant || item.key.remoteJid;
+                        await ensureSettingsLoaded(editedBy);
+                        if (getSetting(editedBy, 'ANTI_EDIT') === 'off') continue;
+
+                        const original = store.loadMessage(item.key.remoteJid, item.key.id);
+                        if (!original) continue;
+
+                        const oldText = getMsgText(original.message);
+                        const newText = getMsgText(item.edit);
+                        const author = global.decodeJid(editedBy).split('@')[0];
+                        const prefix = item.key.remoteJid.endsWith('@g.us') ? 'Group' : 'Private';
+
+                        await sock.sendMessage(item.key.remoteJid, {
+                            text: `✏️ *Anti-Edit Alert*\n\n*Chat:* ${prefix}\n*User:* @${author}\n*Before:* ${oldText || '(empty)'}\n*After:* ${newText || '(empty)'}`
+                        }, { mentions: item.key.participant ? [item.key.participant] : [] });
+                    } catch (editErr) {
+                        console.error('[ANTI-EDIT ERROR]', editErr);
+                    }
+                }
+            } catch (e) {
+                console.error('[ANTI-DELETE UPDATE ERROR]', e);
             }
         });
 
