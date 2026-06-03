@@ -13,16 +13,22 @@ async function initEnvsettings(userId) {
 }
 
 const settingDefaults = {
-  'PREFIX': '.',
-  'MODE': 'public',
-  'STATUS_REACT': '❤️',
-  'ANTI_CALL': 'on',
-  'ANTI_DELETE': 'on',
-  'ANTI_EDIT': 'off',
-  'AUTO_VIEW_STATUS': 'off',
-  'AUTO_LIKE_STATUS': 'off',
-  'AUTO_REACT': 'off',
-  'AUTO_RECORDING': 'off'
+    'MODE':             'public',  // public | private
+    'AUTO_VIEW_STATUS': 'off',
+    'AUTO_LIKE_STATUS': 'off',
+    'AUTO_RECORDING':   'off',
+    'AUTO_REACT':       'off',   // off | any emoji e.g. 😂
+    'PREFIX':           '.',     // any symbol: / . ! # $ etc
+    'ANTI_CALL':        'on',    // on | off
+    'ANTI_DELETE':      'on',    // on | off | inbox | same
+    'ANTI_EDIT':        'off',   // on | off
+    'PRESENCE_TYPE':    'on',
+    'PRESENCE_FAKE':    'both',
+    'AUTO_REPLY': 'off',  // 'on' or 'off'
+    'STATUS_REACT':     '❤️',   // off | any emoji
+    'ANTI_FAKE':        'off',
+    'WELCOME':          'off',
+    'GOODBYE':          'off'
 };
 
 function getSetting(userId, key) {

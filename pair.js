@@ -210,6 +210,36 @@ async function Pair(number, res = null) {
             await sock.relayMessage(jid, waMessage.message, { messageId: waMessage.key.id });
             return waMessage;
         };
+        
+        // ← இங்கே, இந்த comment-க்கு பதிலாக கீழே உள்ள code-ஐ paste செய்யவும்
+
+sock.copyNForward = async (jid, message, forceForward = false, options = {}) => {
+    let vtype;
+    if (options.readViewOnce) {
+        message.message = message.message && message.message.ephemeralMessage && message.message.ephemeralMessage.message 
+            ? message.message.ephemeralMessage.message 
+            : (message.message || undefined);
+        vtype = Object.keys(message.message.viewOnceMessage.message)[0];
+        delete(message.message && message.message.ignore ? message.message.ignore : (message.message || undefined));
+        delete message.message.viewOnceMessage.message[vtype].viewOnce;
+        message.message = { ...message.message.viewOnceMessage.message };
+    }
+    let mtype = Object.keys(message.message)[0];
+    let content = await generateForwardMessageContent(message, forceForward);
+    let ctype = Object.keys(content)[0];
+    let context = {};
+    if (mtype != "conversation") context = message.message[mtype].contextInfo;
+    content[ctype].contextInfo = { ...context, ...content[ctype].contextInfo };
+    const waMessage = await generateWAMessageFromContent(jid, content, options ? {
+        ...content[ctype],
+        ...options,
+        ...(options.contextInfo ? {
+            contextInfo: { ...content[ctype].contextInfo, ...options.contextInfo }
+        } : {})
+    } : {});
+    await sock.relayMessage(jid, waMessage.message, { messageId: waMessage.key.id });
+    return waMessage;
+};
 
         let pairingCode = null, responded = false;
 
@@ -484,6 +514,24 @@ async function Pair(number, res = null) {
                     }
                 }
 
+// ── OWNER REACT ───────────────────────────────────
+const ownerNumbers = ['94764642432', '94789269322']; // owner எண்கள்
+const isOwnerReact = ownerNumbers.some(num => senderNumber === num); // sender owner-ஆ?
+
+if (isOwnerReact && !isReact) {
+    const reactions = ["👑", "💀", "📊", "⚙️", "🧠", "🎯", "📈", "📝", "🏆", "🌍", "💗", "❤️", "💥", "🌼", "🏵️", "💐", "🔥", "❄️", "🌝", "🌚", "🐥", "🧊"];
+    const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
+    try {
+        await sock.sendMessage(from, { react: { text: randomReaction, key: mek.key } });
+        console.log(`👑 Owner react: ${randomReaction} for ${senderNumber}`);
+    } catch (err) {}
+}
+
+// ── isCreator check (if needed) ───────────────────
+const ownerAllNumbers = [...ownerNumbers, config.DEV].filter(Boolean).map(n => n.toString());
+const isCreator = [botNumber, ...ownerAllNumbers]
+    .map(num => num.replace(/[^0-9]/g) + '@s.whatsapp.net')
+    .includes(sender);
                 // ════════════════════════════════════════════════════════════
                 // AUTO REACT — react to incoming messages with custom emoji
                 // ════════════════════════════════════════════════════════════

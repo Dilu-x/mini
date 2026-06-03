@@ -52,6 +52,7 @@ async function initUserEnvIfMissing(userId) {
     STATUS_REACT:     "❤️",   // off | any emoji
     ANTI_FAKE:        "off",
     WELCOME:          "off",
+    AUTO_REPLY: "off",
     GOODBYE:          "off",
     CREATE_NB:        userId
   };
