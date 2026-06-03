@@ -38,6 +38,7 @@ async function initUserEnvIfMissing(userId) {
   if (!userId) { console.error("❌ User ID is missing"); return; }
 
   const defaults = {
+    MODE:             "public",  // public | private
     AUTO_VIEW_STATUS: "off",
     AUTO_LIKE_STATUS: "off",
     AUTO_RECORDING:   "off",

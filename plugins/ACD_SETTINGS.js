@@ -8,62 +8,45 @@ async function ensureLoaded(userId) {
 }
 
 // ── Pending state: waiting for user's value reply ─────────────────────────────
-// Map: userId -> { key, label, options }
+// Map: userId -> { key, label, options, category }
 const pendingSettings = new Map();
 
-// ── Settings menu definition ──────────────────────────────────────────────────
-const SETTINGS_MENU = [
-  {
-    section: "1",
-    title: "📌 Auto Features",
-    items: [
-      { num: "1.1", label: "Auto View Status",  key: "AUTO_VIEW_STATUS", options: ["on", "off"] },
-      { num: "1.2", label: "Auto Like Status",  key: "AUTO_LIKE_STATUS", options: ["on", "off"] },
-      { num: "1.3", label: "Auto Recording",    key: "AUTO_RECORDING",   options: ["on", "off"] },
-      { num: "1.4", label: "Auto React (emoji)",key: "AUTO_REACT",       options: ["on", "off", "emoji"] },
-    ]
-  },
-  {
-    section: "2",
-    title: "🛡️ Anti Features",
-    items: [
-      { num: "2.1", label: "Anti Call",    key: "ANTI_CALL",   options: ["on", "off"] },
-      { num: "2.2", label: "Anti Delete",  key: "ANTI_DELETE", options: ["on", "off", "inbox", "same"] },
-      { num: "2.3", label: "Anti Edit",    key: "ANTI_EDIT",   options: ["on", "off"] },
-      { num: "2.4", label: "Anti Fake",    key: "ANTI_FAKE",   options: ["on", "off"] },
-    ]
-  },
-  {
-    section: "3",
-    title: "💬 Status & Presence",
-    items: [
-      { num: "3.1", label: "Status React (emoji)", key: "STATUS_REACT",   options: ["on", "off", "emoji"] },
-      { num: "3.2", label: "Presence Type",        key: "PRESENCE_TYPE",  options: ["on", "off"] },
-      { num: "3.3", label: "Presence Fake",        key: "PRESENCE_FAKE",  options: ["on", "off", "both"] },
-    ]
-  },
-  {
-    section: "4",
-    title: "👥 Group Features",
-    items: [
-      { num: "4.1", label: "Welcome Message", key: "WELCOME", options: ["on", "off"] },
-      { num: "4.2", label: "Goodbye Message", key: "GOODBYE", options: ["on", "off"] },
-    ]
-  },
-  {
-    section: "5",
-    title: "🔧 Bot Config",
-    items: [
-      { num: "5.1", label: "Set Prefix", key: "PREFIX", options: ["value"] },
-    ]
-  }
-];
+// ── Settings menu definition — Sequential numbering (1, 2, 3... not 1.1, 1.2) ─
+const SETTINGS_MENU = {
+  "📌 Auto Features": [
+    { num: "1",  label: "Auto View Status",     key: "AUTO_VIEW_STATUS", options: ["on", "off"] },
+    { num: "2",  label: "Auto Like Status",     key: "AUTO_LIKE_STATUS", options: ["on", "off"] },
+    { num: "3",  label: "Auto Recording",       key: "AUTO_RECORDING",   options: ["on", "off"] },
+    { num: "4",  label: "Auto React (emoji)",   key: "AUTO_REACT",       options: ["on", "off", "emoji"] },
+  ],
+  "🛡️ Anti Features": [
+    { num: "5",  label: "Anti Call",            key: "ANTI_CALL",        options: ["on", "off"] },
+    { num: "6",  label: "Anti Delete",          key: "ANTI_DELETE",      options: ["on", "off", "inbox", "same"] },
+    { num: "7",  label: "Anti Edit",            key: "ANTI_EDIT",        options: ["on", "off"] },
+    { num: "8",  label: "Anti Fake",            key: "ANTI_FAKE",        options: ["on", "off"] },
+  ],
+  "💬 Status & Presence": [
+    { num: "9",  label: "Status React (emoji)", key: "STATUS_REACT",     options: ["on", "off", "emoji"] },
+    { num: "10", label: "Presence Type",        key: "PRESENCE_TYPE",    options: ["on", "off"] },
+    { num: "11", label: "Presence Fake",        key: "PRESENCE_FAKE",    options: ["on", "off", "both"] },
+  ],
+  "👥 Group Features": [
+    { num: "12", label: "Welcome Message",      key: "WELCOME",          options: ["on", "off"] },
+    { num: "13", label: "Goodbye Message",      key: "GOODBYE",          options: ["on", "off"] },
+  ],
+  "🔧 Bot Config": [
+    { num: "14", label: "Bot Mode (Public/Private)", key: "MODE",        options: ["public", "private"] },
+    { num: "15", label: "Set Prefix",           key: "PREFIX",           options: ["value"] },
+  ]
+};
 
 // ── Flatten menu for quick lookup by number ───────────────────────────────────
 const menuMap = {};
-for (const sec of SETTINGS_MENU) {
-  for (const item of sec.items) {
-    menuMap[item.num] = item;
+const categoryMap = {};
+for (const [category, items] of Object.entries(SETTINGS_MENU)) {
+  for (const item of items) {
+    menuMap[item.num] = { ...item, category };
+    categoryMap[item.num] = category;
   }
 }
 
@@ -74,10 +57,10 @@ function fmtVal(v) {
   return `✳️  ${v}`;
 }
 
-// ── /settings command — show numbered menu ────────────────────────────────────
+// ── /settings command — show categorized menu with reply numbers ───────────────
 cmd({
   pattern: "settings",
-  desc: "Interactive settings menu",
+  desc: "Interactive settings menu with categories",
   category: "settings",
   react: "⚙️",
   filename: __filename
@@ -86,22 +69,24 @@ cmd({
     await ensureLoaded(sender);
     const s = getFullSettings(sender);
 
-    let text = `╔══════════════════════════╗\n`;
-    text += `║   ⚙️  *YOUR SETTINGS MENU*   ║\n`;
-    text += `╚══════════════════════════╝\n`;
-    text += `_Reply with number to change a setting_\n\n`;
+    let text = `╔════════════════════════════╗\n`;
+    text += `║   ⚙️  *YOUR SETTINGS MENU*    ║\n`;
+    text += `╚════════════════════════════╝\n\n`;
+    text += `_📝 Reply with a number (1-15) to change that setting_\n\n`;
 
-    for (const sec of SETTINGS_MENU) {
-      text += `*${sec.title}*\n`;
-      for (const item of sec.items) {
+    let currentNum = 1;
+    for (const [category, items] of Object.entries(SETTINGS_MENU)) {
+      text += `\n${category}\n`;
+      text += `${'─'.repeat(35)}\n`;
+      for (const item of items) {
         const cur = s[item.key] ?? 'off';
-        text += `  *${item.num}* — ${item.label}\n`;
-        text += `         Current: ${fmtVal(cur)}\n`;
+        const numStr = item.num.toString().padStart(2, ' ');
+        text += `  *${numStr}* → ${item.label}\n`;
+        text += `       Current: ${fmtVal(cur)}\n`;
       }
-      text += `\n`;
     }
 
-    text += `💡 _Example: Type *2.2* to change Anti Delete_`;
+    text += `\n\n💡 _Example: Type *6* to change Anti Delete_`;
     reply(text);
   } catch (e) { reply(`❌ Error: ${e.message}`); }
 });
@@ -152,7 +137,7 @@ cmd({
       return reply(`${icon} *${pending.label}* set to *${val.toUpperCase()}* successfully!\n\nType /settings to view all settings.`);
     }
 
-    // ── Step 1: user typed a menu number (e.g. "1.1", "2.2") ──
+    // ── Step 1: user typed a menu number (e.g. "1", "6", "15") ──
     if (!menuMap[text]) return; // not a menu number, ignore
 
     const item = menuMap[text];
@@ -176,7 +161,14 @@ cmd({
       optText = item.options.map(o => `*${o}*`).join(' | ');
     }
 
-    reply(`⚙️ *${item.label}*\n\nCurrent: ${fmtVal(cur)}\n\nReply with: ${optText}\n\n_You have 30 seconds to reply_`);
+    let response = `${item.category}\n`;
+    response += `${'─'.repeat(35)}\n\n`;
+    response += `⚙️ *${item.label}*\n\n`;
+    response += `Current: ${fmtVal(cur)}\n\n`;
+    response += `Reply with: ${optText}\n\n`;
+    response += `_You have 30 seconds to reply_`;
+
+    reply(response);
 
   } catch (e) { console.error('[SETTINGS BODY ERROR]', e); }
 });
@@ -404,5 +396,24 @@ cmd({
     if (/\s/.test(newPrefix)) return reply(`❌ Prefix cannot contain spaces.`);
     await setSetting(sender, 'PREFIX', newPrefix);
     reply(`✅ *Prefix updated!*\n\nNew prefix: *${newPrefix}*\nNow use: *${newPrefix}ping*, *${newPrefix}settings*, etc.`);
+  } catch(e) { reply(`❌ Error: ${e.message}`); }
+});
+
+cmd({
+  pattern: "mode",
+  desc: "Set bot mode: public or private. /mode public",
+  category: "settings", react: "🔒", filename: __filename
+}, async (conn, mek, m, { sender, args, reply }) => {
+  try {
+    await ensureLoaded(sender);
+    const mode = args[0]?.toLowerCase();
+    const valid = ['public', 'private'];
+    if (!mode || !valid.includes(mode)) {
+      const cur = getSetting(sender, 'MODE');
+      return reply(`*🔒 Bot Mode*\n\nCurrent: *${cur}*\n\nUsage: /mode <public | private>\n• *public* — Responds to everyone\n• *private* — Responds to owner only`);
+    }
+    await setSetting(sender, 'MODE', mode);
+    const icon = mode === 'public' ? '🌐' : '🔒';
+    reply(`${icon} *Bot mode set to ${mode.toUpperCase()}*`);
   } catch(e) { reply(`❌ Error: ${e.message}`); }
 });

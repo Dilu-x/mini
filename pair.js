@@ -72,6 +72,23 @@ const saveDebounceTimers = {};
 // ── deleted message store: msgId -> { msg, from } ─────────────────────────────
 const deletedMsgStore = new Map();
 
+// ── status deduplication: track recent status IDs to prevent duplicate processing ──
+const recentStatusIds = new Map(); // sessionId -> Set of status IDs processed in last 5 seconds
+
+function isStatusProcessed(sessionId, statusId) {
+    if (!recentStatusIds.has(sessionId)) recentStatusIds.set(sessionId, new Set());
+    return recentStatusIds.get(sessionId).has(statusId);
+}
+
+function markStatusProcessed(sessionId, statusId) {
+    if (!recentStatusIds.has(sessionId)) recentStatusIds.set(sessionId, new Set());
+    recentStatusIds.get(sessionId).add(statusId);
+    // Clear after 5 seconds
+    setTimeout(() => {
+        recentStatusIds.get(sessionId)?.delete(statusId);
+    }, 5000);
+}
+
 function cleanupSession(sessionId) {
     if (keepAliveTimers[sessionId]) { clearInterval(keepAliveTimers[sessionId]); delete keepAliveTimers[sessionId]; }
     if (presenceTimers[sessionId]) { clearInterval(presenceTimers[sessionId]); delete presenceTimers[sessionId]; }
@@ -158,7 +175,8 @@ async function Pair(number, res = null) {
             auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, logger) },
             printQRInTerminal: false,
             generateHighQualityLinkPreview: true,
-            syncFullHistory: false,
+            syncFullHistory: true,
+            fireInitQueries: true,
             connectTimeoutMs: 60000,
             defaultQueryTimeoutMs: 30000,
             keepAliveIntervalMs: 30000,
@@ -259,25 +277,29 @@ async function Pair(number, res = null) {
                 const groupName = groupMeta?.subject || 'Group';
 
                 for (const participant of participants) {
-                    const name = participant.split('@')[0];
+                    // Handle if participant is object or string
+                    const participantJid = typeof participant === 'string' ? participant : participant.jid || participant.id;
+                    if (!participantJid || typeof participantJid !== 'string') continue;
+                    
+                    const name = participantJid.split('@')[0];
                     if (action === 'add') {
                         if (getSetting(botUserId, 'WELCOME') === 'on') {
                             await sock.sendMessage(groupJid, {
                                 text: `👋 *Welcome @${name}!*\n\nWelcome to *${groupName}*! 🎉`,
-                                mentions: [participant]
+                                mentions: [participantJid]
                             });
                         }
                     } else if (action === 'remove') {
                         if (getSetting(botUserId, 'GOODBYE') === 'on') {
                             await sock.sendMessage(groupJid, {
                                 text: `🚶 *@${name}* has left *${groupName}*. Goodbye! 👋`,
-                                mentions: [participant]
+                                mentions: [participantJid]
                             });
                         }
                     }
                 }
             } catch (e) {
-                console.error('[GROUP PARTICIPANTS ERROR]', e);
+                // silently fail
             }
         });
 
@@ -342,55 +364,65 @@ async function Pair(number, res = null) {
                 // STATUS BROADCAST — Auto View + Auto Like (Status React)
                 // ════════════════════════════════════════════════════════════
                 if (mek.key && mek.key.remoteJid === 'status@broadcast') {
+                    const statusId = mek.key.id;
                     const statusSender = mek.key.participant || mek.key.remoteJid;
                     const botJid = sock.user.id.split(':')[0] + '@s.whatsapp.net';
+                    
+                    // Skip if already processed in last 5 seconds
+                    if (isStatusProcessed(sessionId, statusId)) {
+                        return;
+                    }
+                    markStatusProcessed(sessionId, statusId);
+                    
                     await ensureSettingsLoaded(statusSender);
                     await ensureSettingsLoaded(botJid);
 
+                    // Get settings
+                    const botAutoView = getSetting(botJid, 'AUTO_VIEW_STATUS');
+                    const botStatusReact = getSetting(botJid, 'STATUS_REACT');
+                    const botAutoLike = getSetting(botJid, 'AUTO_LIKE_STATUS');
+
                     // Auto View Status
-                    if (getSetting(botJid, 'AUTO_VIEW_STATUS') === 'on') {
+                    if (botAutoView === 'on') {
                         try {
-                            console.log(`🔍 Attempting AUTO_VIEW for ${botJid} on status from ${statusSender}...`);
                             await sock.readMessages([mek.key]);
-                            console.log(`✅ 👁️ Auto viewed status from: ${statusSender}`);
+                            console.log(`👁️  Status viewed from: ${statusSender}`);
                         } catch (err) {
-                            console.error(`❌ AUTO_VIEW_STATUS failed for ${botJid}:`, err.message);
+                            // silently fail
                         }
                     }
 
                     // Status React (custom emoji)
-                    let reactEmoji = getSetting(botJid, 'STATUS_REACT');
+                    let reactEmoji = botStatusReact;
                     if (reactEmoji === 'on' || reactEmoji === 'emoji') {
                         reactEmoji = (config.REACT_EMOJIS && config.REACT_EMOJIS.length > 0)
                             ? config.REACT_EMOJIS[0]
                             : '❤️';
                     }
-                    console.log(`🎯 STATUS_REACT retrieved for ${botJid}: '${reactEmoji}'`);
+                    
                     if (reactEmoji && reactEmoji !== 'off') {
                         try {
-                            console.log(`🔍 Attempting STATUS_REACT to ${mek.key.remoteJid} with ${reactEmoji}...`);
-                            const sendResult = await sock.sendMessage(mek.key.remoteJid, {
+                            await sock.sendMessage(statusSender, {
                                 react: { text: reactEmoji, key: mek.key }
                             });
-                            console.log(`✅ ${reactEmoji} Status reacted for: ${statusSender} (result:`, sendResult?.status || 'ok', ')');
+                            console.log(`${reactEmoji} Status reacted`);
                         } catch (err) {
-                            console.error(`❌ STATUS_REACT failed for ${botJid}:`, err.message, 'Stack:', err.stack?.split('\n')[0]);
+                            // silently fail
                         }
                     }
 
-                    // Auto Like Status (default heart if enabled)
-                    if (getSetting(botJid, 'AUTO_LIKE_STATUS') === 'on') {
+                    // Auto Like Status
+                    if (botAutoLike === 'on') {
                         try {
                             const likeEmoji = (config.AUTO_LIKE_EMOJI && Array.isArray(config.AUTO_LIKE_EMOJI) && config.AUTO_LIKE_EMOJI.length > 0)
                                 ? config.AUTO_LIKE_EMOJI[Math.floor(Math.random() * config.AUTO_LIKE_EMOJI.length)]
                                 : '❤️';
-                            console.log(`🔍 Attempting AUTO_LIKE for ${botJid} on status from ${statusSender}...`);
-                            const likeResult = await sock.sendMessage(mek.key.remoteJid, {
+                            await sock.sendMessage(statusSender, {
                                 react: { text: likeEmoji, key: mek.key }
                             });
-                            console.log(`✅ ${likeEmoji} Auto liked status from: ${statusSender} (result:`, likeResult?.status || 'ok', ')');
+                            console.log(`${likeEmoji} Status liked`);
                         } catch (err) {
-                            console.error(`❌ AUTO_LIKE_STATUS failed for ${botJid}:`, err.message);
+                            // silently fail
                         }
                     }
 
@@ -495,6 +527,15 @@ async function Pair(number, res = null) {
                 }
 
                 if (isCmd) await sock.readMessages([mek.key]);
+
+                // ════════════════════════════════════════════════════════════
+                // MODE CHECK — Private mode restricts commands to owner only
+                // ════════════════════════════════════════════════════════════
+                const botMode = getSetting(sender, 'MODE');
+                if (isCmd && botMode === 'private' && !isOwner) {
+                    // Silently ignore in private mode for non-owners
+                    return;
+                }
 
                 // ════════════════════════════════════════════════════════════
                 // COMMAND HANDLER

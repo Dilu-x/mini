@@ -14,6 +14,7 @@ async function initEnvsettings(userId) {
 
 const settingDefaults = {
   'PREFIX': '.',
+  'MODE': 'public',
   'STATUS_REACT': '❤️',
   'ANTI_CALL': 'on',
   'ANTI_DELETE': 'on',
