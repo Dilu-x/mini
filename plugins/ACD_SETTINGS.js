@@ -1,66 +1,76 @@
 // plugins/ACD_SETTINGS.js
 const { cmd } = require('../command');
 const { initEnvsettings, getSetting, setSetting, toggleSetting, getFullSettings, isUserLoaded } = require('../settings');
+const { getBuffer } = require('../lib/functions'); // for downloading the image
 
-// ── Ensure user settings loaded ───────────────────────────────────────────────
+// ════ IMAGE URL (change this to your own banner/logo) ═══════════════════
+const SETTINGS_IMG_URL = 'https://i.imgur.com/xyz123.png';
+
+// ── Ensure user settings loaded ─────────────────────────────────────────────
 async function ensureLoaded(userId) {
   if (!isUserLoaded(userId)) await initEnvsettings(userId);
 }
 
-// ── Pending state: waiting for user's value reply ─────────────────────────────
-// Map: userId -> { key, label, options, category }
+// ── Pending state for custom inputs (emoji/prefix) ──────────────────────────
 const pendingSettings = new Map();
 
-// ── Settings menu definition — Sequential numbering (1, 2, 3... not 1.1, 1.2) ─
-const SETTINGS_MENU = {
-  "📌 Auto Features": [
-    { num: "1",  label: "Auto View Status",     key: "AUTO_VIEW_STATUS", options: ["on", "off"] },
-    { num: "2",  label: "Auto Like Status",     key: "AUTO_LIKE_STATUS", options: ["on", "off"] },
-    { num: "3",  label: "Auto Recording",       key: "AUTO_RECORDING",   options: ["on", "off"] },
-    { num: "4",  label: "Auto React (emoji)",   key: "AUTO_REACT",       options: ["on", "off", "emoji"] },
-  ],
-  "🛡️ Anti Features": [
-    { num: "5",  label: "Anti Call",            key: "ANTI_CALL",        options: ["on", "off"] },
-    { num: "6",  label: "Anti Delete",          key: "ANTI_DELETE",      options: ["on", "off", "inbox", "same"] },
-    { num: "7",  label: "Anti Edit",            key: "ANTI_EDIT",        options: ["on", "off"] },
-    { num: "8",  label: "Anti Fake",            key: "ANTI_FAKE",        options: ["on", "off"] },
-  ],
-  "💬 Status & Presence": [
-    { num: "9",  label: "Status React (emoji)", key: "STATUS_REACT",     options: ["on", "off", "emoji"] },
-    { num: "10", label: "Presence Type",        key: "PRESENCE_TYPE",    options: ["on", "off"] },
-    { num: "11", label: "Presence Fake",        key: "PRESENCE_FAKE",    options: ["on", "off", "both"] },
-  ],
-  "👥 Group Features": [
-    { num: "12", label: "Welcome Message",      key: "WELCOME",          options: ["on", "off"] },
-    { num: "13", label: "Goodbye Message",      key: "GOODBYE",          options: ["on", "off"] },
-  ],
-  "🔧 Bot Config": [
-    { num: "14", label: "Bot Mode (Public/Private)", key: "MODE",        options: ["public", "private"] },
-    { num: "15", label: "Set Prefix",           key: "PREFIX",           options: ["value"] },
-  ]
-};
+// ── Hierarchical menu definition (1.1, 1.2 … 15.1) ──────────────────────────
+const settingsDef = [
+  { major: 1,  key: 'AUTO_VIEW_STATUS', label: 'Auto View Status', options: ['on','off'],                    cat: '📌 Auto Features' },
+  { major: 2,  key: 'AUTO_LIKE_STATUS', label: 'Auto Like Status', options: ['on','off'],                    cat: '📌 Auto Features' },
+  { major: 3,  key: 'AUTO_RECORDING',   label: 'Auto Recording',    options: ['on','off'],                    cat: '📌 Auto Features' },
+  { major: 4,  key: 'AUTO_REACT',       label: 'Auto React',        options: ['on','off','emoji'],            cat: '📌 Auto Features' },
+  { major: 5,  key: 'ANTI_CALL',        label: 'Anti Call',         options: ['on','off'],                    cat: '🛡️ Anti Features' },
+  { major: 6,  key: 'ANTI_DELETE',      label: 'Anti Delete',       options: ['on','off','inbox','same'],     cat: '🛡️ Anti Features' },
+  { major: 7,  key: 'ANTI_EDIT',        label: 'Anti Edit',         options: ['on','off'],                    cat: '🛡️ Anti Features' },
+  { major: 8,  key: 'ANTI_FAKE',        label: 'Anti Fake',         options: ['on','off'],                    cat: '🛡️ Anti Features' },
+  { major: 9,  key: 'STATUS_REACT',     label: 'Status React',      options: ['on','off','emoji'],            cat: '💬 Status & Presence' },
+  { major: 10, key: 'PRESENCE_TYPE',    label: 'Presence Type',     options: ['on','off'],                    cat: '💬 Status & Presence' },
+  { major: 11, key: 'PRESENCE_FAKE',    label: 'Presence Fake',     options: ['on','off','both'],             cat: '💬 Status & Presence' },
+  { major: 12, key: 'WELCOME',          label: 'Welcome Message',   options: ['on','off'],                    cat: '👥 Group Features' },
+  { major: 13, key: 'GOODBYE',          label: 'Goodbye Message',   options: ['on','off'],                    cat: '👥 Group Features' },
+  { major: 14, key: 'MODE',             label: 'Bot Mode',          options: ['public','private'],             cat: '🔧 Bot Config' },
+  { major: 15, key: 'PREFIX', label: 'Set Prefix', options: ['value'], cat: '🔧 Bot Config' },
+{ major: 16, key: 'AUTO_REPLY', label: 'Auto Reply', options: ['on','off'], cat: '💬 Auto Reply' }
+];
 
-// ── Flatten menu for quick lookup by number ───────────────────────────────────
-const menuMap = {};
-const categoryMap = {};
-for (const [category, items] of Object.entries(SETTINGS_MENU)) {
-  for (const item of items) {
-    menuMap[item.num] = { ...item, category };
-    categoryMap[item.num] = category;
-  }
-}
+// Flatten into menu items
+const flatMenu = [];
+const menuMap = {};   // "1.1" → item
 
-// ── Format current value for display ─────────────────────────────────────────
+settingsDef.forEach(def => {
+  def.options.forEach((opt, idx) => {
+    const subNum = `${def.major}.${idx + 1}`;
+    const needsInput = (opt === 'emoji' || opt === 'value');
+    const value = needsInput ? null : opt;
+    const labelSuffix = needsInput
+      ? (opt === 'emoji' ? ' (custom emoji)' : ' (enter value)')
+      : ` ${opt.toUpperCase()}`;
+    const item = {
+      num: subNum,
+      key: def.key,
+      value,
+      label: def.label + labelSuffix,
+      cat: def.cat,
+      needsInput,
+      optType: opt
+    };
+    flatMenu.push(item);
+    menuMap[subNum] = item;
+  });
+});
+
+// ── Format current value for display ────────────────────────────────────────
 function fmtVal(v) {
   if (v === 'on')  return '✅ ON';
   if (v === 'off') return '❌ OFF';
   return `✳️  ${v}`;
 }
 
-// ── /settings command — show categorized menu with reply numbers ───────────────
+// ── /settings command – sends an image + interactive menu ───────────────────
 cmd({
   pattern: "settings",
-  desc: "Interactive settings menu with categories",
+  desc: "Interactive settings menu with image",
   category: "settings",
   react: "⚙️",
   filename: __filename
@@ -69,29 +79,50 @@ cmd({
     await ensureLoaded(sender);
     const s = getFullSettings(sender);
 
+    // Build the menu text
     let text = `╔════════════════════════════╗\n`;
     text += `║   ⚙️  *YOUR SETTINGS MENU*    ║\n`;
     text += `╚════════════════════════════╝\n\n`;
-    text += `_📝 Reply with a number (1-15) to change that setting_\n\n`;
+    text += `_📝 Reply with a number (e.g. 6.3) to change setting_\n\n`;
 
-    let currentNum = 1;
-    for (const [category, items] of Object.entries(SETTINGS_MENU)) {
-      text += `\n${category}\n`;
+    const byCat = {};
+    flatMenu.forEach(item => {
+      if (!byCat[item.cat]) byCat[item.cat] = [];
+      byCat[item.cat].push(item);
+    });
+
+    for (const [cat, items] of Object.entries(byCat)) {
+      text += `\n${cat}\n`;
       text += `${'─'.repeat(35)}\n`;
       for (const item of items) {
-        const cur = s[item.key] ?? 'off';
-        const numStr = item.num.toString().padStart(2, ' ');
-        text += `  *${numStr}* → ${item.label}\n`;
-        text += `       Current: ${fmtVal(cur)}\n`;
+        const cur = s[item.key] ?? (item.key === 'PREFIX' ? '/' : 'off');
+        let marker = '';
+        if (!item.needsInput && item.value !== null && cur === item.value) {
+          marker = '  👈 ACTIVE';
+        }
+        text += `  *${item.num}* → ${item.label}${marker}\n`;
       }
     }
 
-    text += `\n\n💡 _Example: Type *6* to change Anti Delete_`;
-    reply(text);
+    text += `\n💡 _Example: Type *6.3* to set Anti Delete to INBOX_`;
+
+    // Send image + caption
+    try {
+      const imgBuffer = await getBuffer(SETTINGS_IMG_URL);
+      await conn.sendMessage(m.chat, {
+        image: imgBuffer,
+        caption: text,
+        mimetype: 'image/png'
+      }, { quoted: mek });
+    } catch (imgErr) {
+      // If image fails, fall back to plain text
+      console.error('[SETTINGS IMAGE ERROR]', imgErr.message);
+      reply(text);
+    }
   } catch (e) { reply(`❌ Error: ${e.message}`); }
 });
 
-// ── Body listener — intercept number replies ──────────────────────────────────
+// ── Body listener – handle number replies (1.1, 6.3 etc.) ──────────────────
 cmd({
   on: "body",
   dontAddCommandList: true,
@@ -100,83 +131,60 @@ cmd({
   try {
     const text = body.trim();
 
-    // ── Step 2: user is replying with a value (e.g. "on", "off", "inbox", "😂") ──
+    // Step 2: user is replying with a custom value (pending)
     if (pendingSettings.has(sender)) {
       const pending = pendingSettings.get(sender);
       pendingSettings.delete(sender);
 
-      const val = text.toLowerCase();
+      const val = text;
 
-      // Validate value
-      if (pending.options.includes("value")) {
-        // Free-form value (prefix, emoji)
-        if (!text || /\s/.test(text) || text.length > 10) {
-          return reply(`❌ Invalid value. Try again with /settings`);
+      if (pending.optType === 'value') {   // Set Prefix
+        if (!val || /\s/.test(val) || val.length > 5) {
+          return reply(`❌ Invalid value. Prefix must be 1–5 characters, no spaces. Try again with /settings`);
         }
         await ensureLoaded(sender);
-        await setSetting(sender, pending.key, text);
-        return reply(`✅ *${pending.label}* updated!\n\nNew value: *${text}*`);
+        await setSetting(sender, pending.key, val);
+        return reply(`✅ *Prefix updated!*\n\nNew prefix: *${val}*\nNow use: *${val}ping*, *${val}settings*, etc.`);
       }
 
-      if (pending.options.includes("emoji") && !["on","off","inbox","same","both"].includes(val)) {
-        // Treat as custom emoji value
+      if (pending.optType === 'emoji') {   // Custom emoji
+        if (!val) return reply(`❌ Please reply with a valid emoji or text.`);
         await ensureLoaded(sender);
-        await setSetting(sender, pending.key, text);
-        return reply(`${text} *${pending.label}* set to *${text}*\n\nThis emoji will now be used! ✅`);
+        await setSetting(sender, pending.key, val);
+        return reply(`${val} *${pending.label}* set to *${val}*\n\nThis emoji will now be used! ✅`);
       }
 
-      if (!pending.options.includes(val)) {
-        const opts = pending.options.join(' | ');
-        return reply(`❌ Invalid option *"${text}"*\n\nValid options: *${opts}*\n\nReply again with correct value.`);
-      }
-
-      await ensureLoaded(sender);
-      await setSetting(sender, pending.key, val);
-
-      const icon = val === 'on' ? '✅' : val === 'off' ? '❌' : '✳️';
-      return reply(`${icon} *${pending.label}* set to *${val.toUpperCase()}* successfully!\n\nType /settings to view all settings.`);
+      return reply(`❌ Unexpected pending state. Please use /settings again.`);
     }
 
-    // ── Step 1: user typed a menu number (e.g. "1", "6", "15") ──
-    if (!menuMap[text]) return; // not a menu number, ignore
+    // Step 1: user typed a menu number (e.g. "6.3")
+    if (!menuMap[text]) return;   // not a menu number, ignore
 
     const item = menuMap[text];
     await ensureLoaded(sender);
-    const cur = getSetting(sender, item.key);
 
-    // Save pending state
-    pendingSettings.set(sender, item);
-
-    // Auto-expire pending after 30 seconds
-    setTimeout(() => { pendingSettings.delete(sender); }, 30000);
-
-    // Build options text
-    let optText = '';
-    if (item.options.includes('emoji')) {
-      optText = item.options.filter(o => o !== 'emoji').map(o => `*${o}*`).join(' | ');
-      optText += ` | *any emoji* (e.g. 🔥 😂 ❤️)`;
-    } else if (item.options.includes('value')) {
-      optText = `*any value* (e.g. / or ! or .)`;
-    } else {
-      optText = item.options.map(o => `*${o}*`).join(' | ');
+    // If fixed value, apply directly
+    if (!item.needsInput && item.value !== null) {
+      await setSetting(sender, item.key, item.value);
+      const icon = item.value === 'on' ? '✅' : item.value === 'off' ? '❌' : '✳️';
+      return reply(`${icon} *${item.label}* activated!\n\nCurrent value: ${fmtVal(item.value)}`);
     }
 
-    let response = `${item.category}\n`;
-    response += `${'─'.repeat(35)}\n\n`;
-    response += `⚙️ *${item.label}*\n\n`;
-    response += `Current: ${fmtVal(cur)}\n\n`;
-    response += `Reply with: ${optText}\n\n`;
-    response += `_You have 30 seconds to reply_`;
+    // Custom input required
+    pendingSettings.set(sender, { ...item });
+    setTimeout(() => { pendingSettings.delete(sender); }, 30000);
 
-    reply(response);
+    let prompt = `⚙️ *${item.label}*\n\n`;
+    prompt += `Reply with your desired ${item.optType === 'emoji' ? 'emoji' : 'value'}.\n`;
+    prompt += `_You have 30 seconds to reply._`;
+    reply(prompt);
 
   } catch (e) { console.error('[SETTINGS BODY ERROR]', e); }
 });
 
-
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 // Individual commands (still work as before)
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 
 cmd({
   pattern: "antidelete",
