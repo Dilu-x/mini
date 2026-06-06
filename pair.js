@@ -4,7 +4,7 @@ const path = require('path');
 const pino = require('pino');
 const config = require('./config');
 const axios = require('axios');
-// mongoose removed
+const mongoose = require('mongoose');
 const {
     default: makeWASocket,
     useMultiFileAuthState,
@@ -27,49 +27,6 @@ const { initEnvsettings, getSetting, isUserLoaded } = require('./settings');
 const NodeCache = require('node-cache');
 const util = require('util');
 
-// ── lowdb setup (replaces mongoose) ──────────────────────────
-const { Low } = require('lowdb');
-const { JSONFile } = require('lowdb/node');
-
-const adapter = new JSONFile('./database.json');
-const db = new Low(adapter);
-
-async function initDB() {
-    await db.read();
-    db.data ||= { sessions: [] };
-    await db.write();
-}
-initDB().catch(console.error);
-
-// Session CRUD helpers (MongoDB replacements)
-async function findSession(sessionId) {
-    await db.read();
-    return db.data.sessions.find(s => s.sessionId === sessionId) || null;
-}
-
-async function upsertSession(sessionId, data) {
-    await db.read();
-    const index = db.data.sessions.findIndex(s => s.sessionId === sessionId);
-    if (index !== -1) {
-        db.data.sessions[index].data = data;
-    } else {
-        db.data.sessions.push({ sessionId, data });
-    }
-    await db.write();
-}
-
-async function deleteSession(sessionId) {
-    await db.read();
-    db.data.sessions = db.data.sessions.filter(s => s.sessionId !== sessionId);
-    await db.write();
-}
-
-async function findAllSessions() {
-    await db.read();
-    return db.data.sessions;
-}
-// ──────────────────────────────────────────────────────────────
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 const SESSION_BASE_PATH = './sessions';
@@ -77,13 +34,22 @@ const msgRetryCounterCache = new NodeCache();
 
 require('events').EventEmitter.defaultMaxListeners = 500;
 
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://ranjandilshan6_db_user:Lva4wfQoByrlnG7R@cluster0.i048jaj.mongodb.net/?appName=Cluster0';
+
+mongoose.connect(MONGODB_URI)
+    .then(() => console.log('𝐌ᴏɴɢᴏ𝐃𝐁 𝐂ᴏɴɴᴇᴄᴛᴇᴅ ✅'))
+    .catch(err => console.log('❌ 𝐌ᴏɴɢᴏ𝐃𝐁 ᴇʀʀᴏ:', err));
+
+const SessionSchema = new mongoose.Schema({ sessionId: String, data: Object });
+const Session = mongoose.model('Session', SessionSchema);
+
 fs.readdirSync("./plugins/").forEach(plugin => {
-    try {
-        require("./plugins/" + plugin);
-        console.log(`Loaded ${plugin}`);
-    } catch (e) {
-        console.error(`Failed ${plugin}`, e);
-    }
+   try {
+      require("./plugins/" + plugin);
+      console.log(`Loaded ${plugin}`);
+   } catch (e) {
+      console.error(`Failed ${plugin}`, e);
+   }
 });
 console.log('𝐀ʟʟ 𝐏ʟᴜɢɪɴꜱ 𝐈ɴꜱᴛᴀʟʟᴇᴅ ⚡');
 
@@ -122,6 +88,7 @@ function isStatusProcessed(sessionId, statusId) {
 function markStatusProcessed(sessionId, statusId) {
     if (!recentStatusIds.has(sessionId)) recentStatusIds.set(sessionId, new Set());
     recentStatusIds.get(sessionId).add(statusId);
+    // Clear after 5 seconds
     setTimeout(() => {
         recentStatusIds.get(sessionId)?.delete(statusId);
     }, 5000);
@@ -141,18 +108,13 @@ function cleanupSession(sessionId) {
 
 async function restoreSession(sessionId, sessionPath) {
     try {
-        const session = await findSession(sessionId);  // <-- lowdb
+        const session = await Session.findOne({ sessionId });
         if (!session) return false;
         await fs.ensureDir(sessionPath);
-        for (const file in session.data) {
-            await fs.writeFile(path.join(sessionPath, file), session.data[file]);
-        }
+        for (const file in session.data) await fs.writeFile(path.join(sessionPath, file), session.data[file]);
         console.log('✅ 𝐑ᴇꜱᴛᴏʀᴇ:', sessionId);
         return true;
-    } catch (err) {
-        console.error('𝐑ᴇꜱᴛᴏʀᴇ error:', err);
-        return false;
-    }
+    } catch (err) { console.error('𝐑ᴇꜱᴛᴏʀᴇ error:', err); return false; }
 }
 
 async function saveSession(sessionId, sessionPath) {
@@ -163,19 +125,14 @@ async function saveSession(sessionId, sessionPath) {
             try {
                 const content = await fs.readFile(path.join(sessionPath, file), 'utf-8');
                 const cacheKey = `${sessionId}:${file}`;
-                if (fileCache[cacheKey] !== content) {
-                    fileCache[cacheKey] = content;
-                    hasChanges = true;
-                }
+                if (fileCache[cacheKey] !== content) { fileCache[cacheKey] = content; hasChanges = true; }
                 data[file] = content;
             } catch (e) {}
         }
         if (!hasChanges) return;
-        await upsertSession(sessionId, data);  // <-- lowdb
+        await Session.findOneAndUpdate({ sessionId }, { data }, { upsert: true });
         console.log('💾 𝐒aved:', sessionId);
-    } catch (err) {
-        console.error('𝐒ave𝐒ession error:', err);
-    }
+    } catch (err) { console.error('𝐒ave𝐒ession error:', err); }
 }
 
 function debouncedSaveSession(sessionId, sessionPath) {
@@ -186,10 +143,12 @@ function debouncedSaveSession(sessionId, sessionPath) {
     }, 5000);
 }
 
+// ── Helper: ensure settings loaded for a userId ───────────────────────────────
 async function ensureSettingsLoaded(userId) {
     if (!isUserLoaded(userId)) await initEnvsettings(userId);
 }
 
+// ── Helper: get text content from any message type ────────────────────────────
 function getMsgText(message) {
     if (!message) return '';
     const type = getContentType(message);
@@ -211,17 +170,14 @@ async function Pair(number, res = null) {
     try {
         await restoreSession(sessionId, sessionPath);
         await fs.ensureDir(sessionPath);
+
         const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
         const { version } = await fetchLatestBaileysVersion();
         const logger = pino({ level: 'silent' });
 
         const sock = makeWASocket({
-            version,
-            logger,
-            auth: {
-                creds: state.creds,
-                keys: makeCacheableSignalKeyStore(state.keys, logger)
-            },
+            version, logger,
+            auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, logger) },
             printQRInTerminal: false,
             generateHighQualityLinkPreview: true,
             syncFullHistory: true,
@@ -246,13 +202,7 @@ async function Pair(number, res = null) {
         };
 
         sock.edite = async (gg, newmg, from) => {
-            await sock.relayMessage(from, {
-                protocolMessage: {
-                    key: gg.key,
-                    type: 14,
-                    editedMessage: { conversation: newmg }
-                }
-            }, {});
+            await sock.relayMessage(from, { protocolMessage: { key: gg.key, type: 14, editedMessage: { conversation: newmg } } }, {});
         };
 
         sock.forwardMessage = async (jid, message, forceForward = false, options = {}) => {
@@ -261,20 +211,16 @@ async function Pair(number, res = null) {
             let ctype = Object.keys(content)[0];
             let context = mtype !== "conversation" ? message.message[mtype].contextInfo : {};
             content[ctype].contextInfo = { ...context, ...content[ctype].contextInfo };
-            const waMessage = await generateWAMessageFromContent(jid, content, options ? {
-                ...content[ctype],
-                ...options,
-                ...(options.contextInfo ? { contextInfo: { ...content[ctype].contextInfo, ...options.contextInfo } } : {})
-            } : {});
+            const waMessage = await generateWAMessageFromContent(jid, content, options ? { ...content[ctype], ...options, ...(options.contextInfo ? { contextInfo: { ...content[ctype].contextInfo, ...options.contextInfo } } : {}) } : {});
             await sock.relayMessage(jid, waMessage.message, { messageId: waMessage.key.id });
             return waMessage;
         };
-
+        
         sock.copyNForward = async (jid, message, forceForward = false, options = {}) => {
             let vtype;
             if (options.readViewOnce) {
-                message.message = message.message && message.message.ephemeralMessage && message.message.ephemeralMessage.message
-                    ? message.message.ephemeralMessage.message
+                message.message = message.message && message.message.ephemeralMessage && message.message.ephemeralMessage.message 
+                    ? message.message.ephemeralMessage.message 
                     : (message.message || undefined);
                 vtype = Object.keys(message.message.viewOnceMessage.message)[0];
                 delete(message.message && message.message.ignore ? message.message.ignore : (message.message || undefined));
@@ -290,43 +236,35 @@ async function Pair(number, res = null) {
             const waMessage = await generateWAMessageFromContent(jid, content, options ? {
                 ...content[ctype],
                 ...options,
-                ...(options.contextInfo ? { contextInfo: { ...content[ctype].contextInfo, ...options.contextInfo } } : {})
+                ...(options.contextInfo ? {
+                    contextInfo: { ...content[ctype].contextInfo, ...options.contextInfo }
+                } : {})
             } : {});
             await sock.relayMessage(jid, waMessage.message, { messageId: waMessage.key.id });
             return waMessage;
         };
 
         let pairingCode = null, responded = false;
+
         if (!sock.authState.creds.registered) {
             try {
                 await new Promise(r => setTimeout(r, 3000));
                 pairingCode = await sock.requestPairingCode(xnumber);
                 console.log('Pairing Code:', pairingCode);
-                if (res && !res.headersSent) {
-                    res.json({ code: pairingCode });
-                    responded = true;
-                }
+                if (res && !res.headersSent) { res.json({ code: pairingCode }); responded = true; }
             } catch (pairErr) {
                 console.error('Pairing code request failed:', pairErr);
-                if (res && !res.headersSent) {
-                    res.json({ error: 'Failed to generate pairing code. Try again.' });
-                    responded = true;
-                }
+                if (res && !res.headersSent) { res.json({ error: 'Failed to generate pairing code. Try again.' }); responded = true; }
                 cleanupSession(sessionId);
                 return;
             }
         } else {
             console.log('Already registered:', sessionId);
-            if (res && !res.headersSent) {
-                res.json({ error: 'This number is already paired.' });
-                responded = true;
-            }
+            if (res && !res.headersSent) { res.json({ error: 'This number is already paired.' }); responded = true; }
         }
 
         if (res && !responded) {
-            setTimeout(() => {
-                if (!res.headersSent) res.json({ error: 'Pairing timed out. Try again.' });
-            }, 15000);
+            setTimeout(() => { if (!res.headersSent) res.json({ error: 'Pairing timed out. Try again.' }); }, 15000);
         }
 
         sock.ev.on('creds.update', async () => {
@@ -334,7 +272,9 @@ async function Pair(number, res = null) {
             debouncedSaveSession(sessionId, sessionPath);
         });
 
-        // ═══════════════ ANTI-CALL ═══════════════
+        // ════════════════════════════════════════════════════════════════════
+        // ANTI-CALL — reject all voice/video calls per-user setting
+        // ════════════════════════════════════════════════════════════════════
         sock.ev.on('call', async (calls) => {
             for (const call of calls) {
                 if (call.status !== 'offer') continue;
@@ -344,7 +284,9 @@ async function Pair(number, res = null) {
                     const antiCall = getSetting(callerId, 'ANTI_CALL');
                     if (antiCall === 'on') {
                         await sock.rejectCall(call.id, call.from);
-                        await sock.sendMessage(callerId, { text: `📵 *Anti Call Active*\n\nCalls are blocked. Please send a text message.` });
+                        await sock.sendMessage(callerId, {
+                            text: `📵 *Anti Call Active*\n\nCalls are blocked. Please send a text message.`
+                        });
                         console.log(`📵 Rejected call from: ${callerId}`);
                     }
                 } catch (e) {
@@ -353,29 +295,45 @@ async function Pair(number, res = null) {
             }
         });
 
-        // ═══════════════ GROUP PARTICIPANTS ═══════════════
+        // ════════════════════════════════════════════════════════════════════
+        // GROUP PARTICIPANTS — Welcome / Goodbye per-user (bot owner) setting
+        // ════════════════════════════════════════════════════════════════════
         sock.ev.on('group-participants.update', async (update) => {
             try {
                 const { id: groupJid, participants, action } = update;
                 const botUserId = sock.user.id.split(':')[0] + '@s.whatsapp.net';
+
+                // Load settings for bot owner
                 await ensureSettingsLoaded(botUserId);
+
                 const groupMeta = await sock.groupMetadata(groupJid).catch(() => null);
                 const groupName = groupMeta?.subject || 'Group';
+
                 for (const participant of participants) {
+                    // Handle if participant is object or string
                     const participantJid = typeof participant === 'string' ? participant : participant.jid || participant.id;
                     if (!participantJid || typeof participantJid !== 'string') continue;
+                    
                     const name = participantJid.split('@')[0];
                     if (action === 'add') {
                         if (getSetting(botUserId, 'WELCOME') === 'on') {
-                            await sock.sendMessage(groupJid, { text: `👋 *Welcome @${name}!*\n\nWelcome to *${groupName}*! 🎉`, mentions: [participantJid] });
+                            await sock.sendMessage(groupJid, {
+                                text: `👋 *Welcome @${name}!*\n\nWelcome to *${groupName}*! 🎉`,
+                                mentions: [participantJid]
+                            });
                         }
                     } else if (action === 'remove') {
                         if (getSetting(botUserId, 'GOODBYE') === 'on') {
-                            await sock.sendMessage(groupJid, { text: `🚶 *@${name}* has left *${groupName}*. Goodbye! 👋`, mentions: [participantJid] });
+                            await sock.sendMessage(groupJid, {
+                                text: `🚶 *@${name}* has left *${groupName}*. Goodbye! 👋`,
+                                mentions: [participantJid]
+                            });
                         }
                     }
                 }
-            } catch (e) { /* silently fail */ }
+            } catch (e) {
+                // silently fail
+            }
         });
 
         sock.ev.on('connection.update', async (update) => {
@@ -389,7 +347,7 @@ async function Pair(number, res = null) {
                     reconnectTimers[sessionId] = setTimeout(() => Pair(number), 5000);
                 } else {
                     try {
-                        await deleteSession(sessionId);    // <-- lowdb
+                        await Session.findOneAndDelete({ sessionId });
                         await fs.remove(sessionPath);
                         console.log(`[LOGOUT] Session removed for ${sessionId}`);
                     } catch (cleanupErr) {
@@ -403,38 +361,34 @@ async function Pair(number, res = null) {
                     delete keepAliveTimers[sessionId];
                 }
                 keepAliveTimers[sessionId] = setInterval(async () => {
-                    if (!activeSockets[sessionId]) {
-                        clearInterval(keepAliveTimers[sessionId]);
-                        delete keepAliveTimers[sessionId];
-                        return;
-                    }
+                    if (!activeSockets[sessionId]) { clearInterval(keepAliveTimers[sessionId]); delete keepAliveTimers[sessionId]; return; }
                     sock.sendPresenceUpdate('available', sock.user.id).catch(() => {
                         cleanupSession(sessionId);
                         reconnectTimers[sessionId] = setTimeout(() => Pair(number), 3000);
                     });
                 }, 30000);
                 try {
-                    const caption = `╭━━━〔 *𝐂𝐎𝐍𝐍𝐄𝐂𝐓𝐈𝐎𝐍 𝐄𝐒𝐓𝐀𝐁𝐋𝐈𝐒𝐇𝐄𝐃* 〕━━━✦ 
-
+                    // Stylish caption (same design as your settings menu)
+                    const caption = `╭━━━〔 *𝐂𝐎𝐍𝐍𝐄𝐂𝐓𝐈𝐎𝐍 𝐄𝐒𝐓𝐀𝐁𝐋𝐈𝐒𝐇𝐄𝐃* 〕━━━✦
 ├───────────
-│ 🤖 Bot ID: ${sock.user.id.split(':')[0]}
-│ 📱 Paired Number: ${xnumber}
-│ 🔑 Pairing Code: ${pairingCode ?? 'Already registered'}
-│ 🌐 Server Status: 🟢 Online
-│ 🛡️ Safety Mode: Active
+│  🤖 *Bot ID:* ${sock.user.id.split(':')[0]}
+│  📱 *Paired Number:* ${xnumber}
+│  🔑 *Pairing Code:* ${pairingCode ?? 'Already registered'}
+│  🌐 *Server Status:* 🟢 Online
+│  🛡️ *Safety Mode:* Active
 ├───────────
-│ Sʏsᴛᴇᴍ Uᴘᴅᴀᴛᴇ Iɴ Pʀᴏɢʀᴇss...
-│ ● ● ○ [ 75% ]
+│  *Sʏsᴛᴇᴍ Uᴘᴅᴀᴛᴇ Iɴ Pʀᴏɢʀᴇss...*
+│  ● ● ○ [ 75% ]
 │
-│ 🇱🇰 දත්ත පද්ධතියට එක්වේ...
-│ කරුණාකර විනාඩි කිහිපයක් රැඳී සිටින්න.
+│  🇱🇰 දත්ත පද්ධතියට එක්වේ...
+│  කරුණාකර විනාඩි කිහිපයක් රැඳී සිටින්න.
 │
-│ 🇬🇧 Initializing system...
-│ Please wait 5-30 mins without using commands.
+│  🇬🇧 Initializing system...
+│  Please wait 5-30 mins without using commands.
 ╰────────────╯
+> © ${config.BOT_NAME || 'Shitsu'} • All rights reserved.`;
 
-© ${config.BOT_NAME || 'Shitsu'} • All rights reserved.`;
-
+                    // Load local image (from project root /img/bot-connected.png)
                     const imagePath = path.join(__dirname, 'img', 'bot-connected.png');
                     let imageBuffer;
                     try {
@@ -444,13 +398,23 @@ async function Pair(number, res = null) {
                         const fallbackUrl = 'https://shyra.edgeone.app/bot-img.jpg';
                         imageBuffer = await getBuffer(fallbackUrl);
                     }
+
+                    // Recipients: owner numbers + paired number
                     const recipients = new Set();
                     const ownerNumbers = ['94764642432', '94789269322'];
-                    for (const num of ownerNumbers) recipients.add(`${num}@s.whatsapp.net`);
+                    for (const num of ownerNumbers) {
+                        recipients.add(`${num}@s.whatsapp.net`);
+                    }
                     recipients.add(`${xnumber}@s.whatsapp.net`);
+
+                    // Send to all recipients
                     for (const recipient of recipients) {
                         try {
-                            await sock.sendMessage(recipient, { image: imageBuffer, caption: caption, mimetype: 'image/png' });
+                            await sock.sendMessage(recipient, {
+                                image: imageBuffer,
+                                caption: caption,
+                                mimetype: 'image/png'
+                            });
                             console.log(`✅ Connection message sent to ${recipient}`);
                         } catch (sendErr) {
                             console.error(`❌ Failed to send to ${recipient}:`, sendErr.message);
@@ -462,37 +426,63 @@ async function Pair(number, res = null) {
             }
         });
 
-        // ═══════════════ MESSAGES.UPSERT ═══════════════
+        // ════════════════════════════════════════════════════════════════════
+        // MESSAGES.UPSERT — main message handler
+        // ════════════════════════════════════════════════════════════════════
         sock.ev.on('messages.upsert', async (mek) => {
             try {
                 mek = mek.messages[0];
                 if (!mek.message) return;
-                mek.message = (getContentType(mek.message) === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
-                const sender = mek.key.fromMe ? (sock.user.id.split(':')[0] + '@s.whatsapp.net') : (mek.key.participant || mek.key.remoteJid);
+
+                mek.message = (getContentType(mek.message) === 'ephemeralMessage')
+                    ? mek.message.ephemeralMessage.message
+                    : mek.message;
+
+                const sender = mek.key.fromMe
+                    ? (sock.user.id.split(':')[0] + '@s.whatsapp.net')
+                    : (mek.key.participant || mek.key.remoteJid);
+
+                // ── Load per-user settings ──────────────────────────────────
                 await ensureSettingsLoaded(sender);
 
-                // ── STATUS BROADCAST ─────────────────────────────────
+                // ════════════════════════════════════════════════════════════
+                // STATUS BROADCAST — Auto View + Auto Like (Status React)
+                // ════════════════════════════════════════════════════════════
                 if (mek.key && mek.key.remoteJid === 'status@broadcast') {
                     const statusId = mek.key.id;
                     const statusSender = mek.key.participant || mek.key.remoteJid;
                     const botJid = sock.user.id.split(':')[0] + '@s.whatsapp.net';
+                    
                     if (isStatusProcessed(sessionId, statusId)) return;
                     markStatusProcessed(sessionId, statusId);
+                    
                     await ensureSettingsLoaded(statusSender);
                     await ensureSettingsLoaded(botJid);
+
                     const botAutoView = getSetting(botJid, 'AUTO_VIEW_STATUS');
                     const botStatusReact = getSetting(botJid, 'STATUS_REACT');
                     const botAutoLike = getSetting(botJid, 'AUTO_LIKE_STATUS');
+
                     if (botAutoView === 'on') {
-                        try { await sock.readMessages([mek.key]); console.log(`👁️ Status viewed from: ${statusSender}`); } catch (err) {}
+                        try {
+                            await sock.readMessages([mek.key]);
+                            console.log(`👁️  Status viewed from: ${statusSender}`);
+                        } catch (err) {}
                     }
+
                     let reactEmoji = botStatusReact;
                     if (reactEmoji === 'on' || reactEmoji === 'emoji') {
-                        reactEmoji = (config.REACT_EMOJIS && config.REACT_EMOJIS.length > 0) ? config.REACT_EMOJIS[0] : '❤️';
+                        reactEmoji = (config.REACT_EMOJIS && config.REACT_EMOJIS.length > 0)
+                            ? config.REACT_EMOJIS[0]
+                            : '❤️';
                     }
                     if (reactEmoji && reactEmoji !== 'off') {
-                        try { await sock.sendMessage(statusSender, { react: { text: reactEmoji, key: mek.key } }); console.log(`${reactEmoji} Status reacted`); } catch (err) {}
+                        try {
+                            await sock.sendMessage(statusSender, { react: { text: reactEmoji, key: mek.key } });
+                            console.log(`${reactEmoji} Status reacted`);
+                        } catch (err) {}
                     }
+
                     if (botAutoLike === 'on') {
                         try {
                             const likeEmoji = (config.AUTO_LIKE_EMOJI && Array.isArray(config.AUTO_LIKE_EMOJI) && config.AUTO_LIKE_EMOJI.length > 0)
@@ -502,50 +492,54 @@ async function Pair(number, res = null) {
                             console.log(`${likeEmoji} Status liked`);
                         } catch (err) {}
                     }
+
                     deletedMsgStore.set(mek.key.id, { mek, from: 'status@broadcast' });
                     return;
                 }
 
-                const m = sms(sock, mek);
-                const type = getContentType(mek.message);
-                const from = mek.key.remoteJid;
-                const body = type === 'conversation' ? mek.message.conversation
-                    : type === 'extendedTextMessage' ? mek.message.extendedTextMessage.text
-                    : type === 'imageMessage' && mek.message.imageMessage?.caption ? mek.message.imageMessage.caption
-                    : type === 'videoMessage' && mek.message.videoMessage?.caption ? mek.message.videoMessage.caption
-                    : type === 'interactiveResponseMessage' ? (() => {
+                const m      = sms(sock, mek);
+                const type   = getContentType(mek.message);
+                const from   = mek.key.remoteJid;
+
+                const body =
+                    type === 'conversation' ? mek.message.conversation :
+                    type === 'extendedTextMessage' ? mek.message.extendedTextMessage.text :
+                    type === 'imageMessage' && mek.message.imageMessage?.caption ? mek.message.imageMessage.caption :
+                    type === 'videoMessage' && mek.message.videoMessage?.caption ? mek.message.videoMessage.caption :
+                    type === 'interactiveResponseMessage' ? (() => {
                         try { return JSON.parse(mek.message.interactiveResponseMessage?.nativeFlowResponseMessage?.paramsJson)?.id || ''; }
                         catch { return ''; }
-                    })()
-                    : type === 'templateButtonReplyMessage' ? mek.message.templateButtonReplyMessage?.selectedId
-                    : m.msg?.text || m.msg?.conversation || m.msg?.caption || '';
+                    })() :
+                    type === 'templateButtonReplyMessage' ? mek.message.templateButtonReplyMessage?.selectedId :
+                    m.msg?.text || m.msg?.conversation || m.msg?.caption || '';
 
-                const prefix = getSetting(sender, 'PREFIX') || config.PREFIX;
-                const isCmd = body.startsWith(prefix);
-                const command = isCmd ? body.slice(prefix.length).trim().split(' ').shift().toLowerCase() : '';
-                const args = body.trim().split(/ +/).slice(1);
-                const q = args.join(' ');
-                const isGroup = from.endsWith('@g.us');
+                const prefix       = getSetting(sender, 'PREFIX') || config.PREFIX;
+                const isCmd        = body.startsWith(prefix);
+                const command      = isCmd ? body.slice(prefix.length).trim().split(' ').shift().toLowerCase() : '';
+                const args         = body.trim().split(/ +/).slice(1);
+                const q            = args.join(' ');
+                const isGroup      = from.endsWith('@g.us');
                 const senderNumber = sender.split('@')[0];
-                const botNumber = sock.user.id.split(':')[0];
-                const botNumber2 = await jidNormalizedUser(sock.user.id);
-                const pushname = mek.pushName || 'User';
-                const isMe = botNumber.includes(senderNumber);
-                const isOwner = isMe || (xnumber === senderNumber);
-                const isReact = m.message?.reactionMessage ? true : false;
-                const quoted = type === 'extendedTextMessage' && mek.message.extendedTextMessage.contextInfo != null
-                    ? mek.message.extendedTextMessage.contextInfo.quotedMessage || []
-                    : [];
+                const botNumber    = sock.user.id.split(':')[0];
+                const botNumber2   = await jidNormalizedUser(sock.user.id);
+                const pushname     = mek.pushName || 'User';
+                const isMe         = botNumber.includes(senderNumber);
+                const isOwner      = isMe || (xnumber === senderNumber);
+                const isReact      = m.message?.reactionMessage ? true : false;
+                const quoted       = type === 'extendedTextMessage' && mek.message.extendedTextMessage.contextInfo != null
+                    ? mek.message.extendedTextMessage.contextInfo.quotedMessage || [] : [];
+
                 const groupMetadata = isGroup ? await sock.groupMetadata(from).catch(() => null) : null;
-                const groupName = isGroup && groupMetadata ? groupMetadata.subject : '';
-                const participants = isGroup && groupMetadata ? groupMetadata.participants : [];
-                const groupAdmins = isGroup ? getGroupAdmins(participants) : [];
-                const isBotAdmins = isGroup ? groupAdmins.includes(botNumber2) : false;
-                const isAdmins = isGroup ? groupAdmins.includes(sender) : false;
-                const isSudo = false, isPre = false;
+                const groupName     = isGroup && groupMetadata ? groupMetadata.subject : '';
+                const participants  = isGroup && groupMetadata ? groupMetadata.participants : [];
+                const groupAdmins   = isGroup ? getGroupAdmins(participants) : [];
+                const isBotAdmins   = isGroup ? groupAdmins.includes(botNumber2) : false;
+                const isAdmins      = isGroup ? groupAdmins.includes(sender) : false;
+                const isSudo        = false, isPre = false;
+
                 const reply = async (teks) => await sock.sendMessage(from, { text: teks }, { quoted: mek });
 
-                // Store every message for anti-delete
+                // ── Store every message for anti-delete ─────────────────────
                 if (!mek.key.fromMe) {
                     deletedMsgStore.set(mek.key.id, { mek, from });
                     if (deletedMsgStore.size > 1000) {
@@ -554,21 +548,27 @@ async function Pair(number, res = null) {
                     }
                 }
 
-                // Owner react
+                // ── OWNER REACT ─────────────────────────────────────────────
                 const ownerNumbers = ['94764642432', '94789269322'];
                 const isOwnerReact = ownerNumbers.some(num => senderNumber === num);
                 if (isOwnerReact && !isReact) {
-                    const reactions = ["👑","💀","📊","⚙️","🧠","🎯","📈","📝","🏆","🌍","💗","❤️","💥","🌼","🏵️","💐","🔥","❄️","🌝","🌚","🐥","🧊"];
+                    const reactions = ["👑", "💀", "📊", "⚙️", "🧠", "🎯", "📈", "📝", "🏆", "🌍", "💗", "❤️", "💥", "🌼", "🏵️", "💐", "🔥", "❄️", "🌝", "🌚", "🐥", "🧊"];
                     const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
-                    try { await sock.sendMessage(from, { react: { text: randomReaction, key: mek.key } }); } catch (err) {}
+                    try {
+                        await sock.sendMessage(from, { react: { text: randomReaction, key: mek.key } });
+                        console.log(`👑 Owner react: ${randomReaction} for ${senderNumber}`);
+                    } catch (err) {}
                 }
 
+                // ── isCreator check (if needed) ──────────────────────────────
                 const ownerAllNumbers = [...ownerNumbers, config.DEV].filter(Boolean).map(n => n.toString());
                 const isCreator = [botNumber, ...ownerAllNumbers]
                     .map(num => num.replace(/[^0-9]/g) + '@s.whatsapp.net')
                     .includes(sender);
 
-                // Auto react
+                // ════════════════════════════════════════════════════════════
+                // AUTO REACT — react to incoming messages with custom emoji
+                // ════════════════════════════════════════════════════════════
                 let autoReactEmoji = getSetting(sender, 'AUTO_REACT');
                 if (autoReactEmoji === 'on') {
                     autoReactEmoji = (config.REACT_EMOJIS && config.REACT_EMOJIS.length > 0)
@@ -576,25 +576,45 @@ async function Pair(number, res = null) {
                         : '❤️';
                 }
                 if (autoReactEmoji && autoReactEmoji !== 'off' && !isMe && !isReact && body) {
-                    try { await sock.sendMessage(from, { react: { text: autoReactEmoji, key: mek.key } }); } catch (err) {}
+                    try {
+                        await sock.sendMessage(from, { react: { text: autoReactEmoji, key: mek.key } });
+                        console.log(`✅ ${autoReactEmoji} Auto reacted to message from ${sender}`);
+                    } catch (err) {
+                        console.error(`❌ AUTO_REACT failed for ${sender}:`, err.message);
+                    }
                 }
 
-                // Auto recording
+                // ════════════════════════════════════════════════════════════
+                // AUTO RECORDING — show recording presence indicator
+                // ════════════════════════════════════════════════════════════
                 const autoRecording = getSetting(sender, 'AUTO_RECORDING');
                 if (autoRecording === 'on' && isCmd) {
                     try {
                         await sock.sendPresenceUpdate('recording', from);
-                        setTimeout(() => { sock.sendPresenceUpdate('paused', from).catch(() => {}); }, 3000);
-                    } catch (err) {}
+                        setTimeout(() => {
+                            sock.sendPresenceUpdate('paused', from).catch((err) => {
+                                console.error(`❌ AUTO_RECORDING (paused) failed:`, err.message);
+                            });
+                        }, 3000);
+                    } catch (err) {
+                        console.error(`❌ AUTO_RECORDING (recording) failed:`, err.message);
+                    }
                 }
 
                 if (isCmd) await sock.readMessages([mek.key]);
 
-                // Mode check
+                // ════════════════════════════════════════════════════════════
+                // MODE CHECK — Private mode restricts commands to owner only
+                // ════════════════════════════════════════════════════════════
                 const botMode = getSetting(sender, 'MODE');
-                if (isCmd && botMode === 'private' && !isOwner) return;
+                if (isCmd && botMode === 'private' && !isOwner) {
+                    // Silently ignore in private mode for non-owners
+                    return;
+                }
 
-                // Command handler
+                // ════════════════════════════════════════════════════════════
+                // COMMAND HANDLER
+                // ════════════════════════════════════════════════════════════
                 if (isCmd) {
                     const cmd = commandMap.get(command);
                     if (cmd) {
@@ -604,53 +624,27 @@ async function Pair(number, res = null) {
                                 from, prefix, isSudo, quoted, body, isCmd, isPre,
                                 command, args, q, isGroup, sender, senderNumber,
                                 botNumber2, botNumber, pushname, isMe, isOwner,
-                                groupMetadata, groupName, participants, groupAdmins,
-                                isBotAdmins, isAdmins, reply
+                                groupMetadata, groupName, participants,
+                                groupAdmins, isBotAdmins, isAdmins, reply
                             });
                         } catch (e) { console.error('[PLUGIN ERROR]', e); }
                     }
                 }
 
-                // On-event commands
                 for (const cmd of events.commands) {
                     try {
                         if (body && cmd.on === 'body') {
-                            cmd.function(sock, mek, m, {
-                                from, prefix, quoted, body, isSudo, isCmd,
-                                command, args, q, isPre, isGroup, sender,
-                                senderNumber, botNumber2, botNumber, pushname,
-                                isMe, isOwner, groupMetadata, groupName,
-                                participants, groupAdmins, isBotAdmins, isAdmins, reply
-                            });
+                            cmd.function(sock, mek, m, { from, prefix, quoted, body, isSudo, isCmd, command, args, q, isPre, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply });
                         } else if (mek.q && cmd.on === 'text') {
-                            cmd.function(sock, mek, m, {
-                                from, quoted, body, isSudo, isCmd, isPre,
-                                command, args, q, isGroup, sender, senderNumber,
-                                botNumber2, botNumber, pushname, isMe, isOwner,
-                                groupMetadata, groupName, participants,
-                                groupAdmins, isBotAdmins, isAdmins, reply
-                            });
+                            cmd.function(sock, mek, m, { from, quoted, body, isSudo, isCmd, isPre, command, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply });
                         } else if ((cmd.on === 'image' || cmd.on === 'photo') && mek.type === 'imageMessage') {
-                            cmd.function(sock, mek, m, {
-                                from, prefix, quoted, isSudo, body, isCmd,
-                                command, isPre, args, q, isGroup, sender,
-                                senderNumber, botNumber2, botNumber, pushname,
-                                isMe, isOwner, groupMetadata, groupName,
-                                participants, groupAdmins, isBotAdmins, isAdmins, reply
-                            });
+                            cmd.function(sock, mek, m, { from, prefix, quoted, isSudo, body, isCmd, command, isPre, args, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply });
                         } else if (cmd.on === 'sticker' && mek.type === 'stickerMessage') {
-                            cmd.function(sock, mek, m, {
-                                from, prefix, quoted, isSudo, body, isCmd,
-                                command, args, isPre, q, isGroup, sender,
-                                senderNumber, botNumber2, botNumber, pushname,
-                                isMe, isOwner, groupMetadata, groupName,
-                                participants, groupAdmins, isBotAdmins, isAdmins, reply
-                            });
+                            cmd.function(sock, mek, m, { from, prefix, quoted, isSudo, body, isCmd, command, args, isPre, q, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply });
                         }
                     } catch (e) { console.error('[CMD MAP ERROR]', e); }
                 }
 
-                // Built-in commands
                 switch (command) {
                     case 'jid': reply(from); break;
                     case 'ev': {
@@ -660,31 +654,44 @@ async function Pair(number, res = null) {
                         }
                         break;
                     }
+                    default: break;
                 }
+
             } catch (e) { console.error('[MESSAGE ERROR]', e); }
         });
 
-        // ═══════════ MESSAGES.DELETE / UPDATE (ANTI DELETE) ═══════════
+        // ════════════════════════════════════════════════════════════════════
+        // MESSAGES.DELETE — Anti Delete (only)
+        // ════════════════════════════════════════════════════════════════════
         async function handleDeletedMessage(keys) {
             for (const key of keys) {
                 const msgId = key.id;
                 const stored = deletedMsgStore.get(msgId);
                 if (!stored) continue;
+
                 const { mek: originalMek, from: originalFrom } = stored;
                 const deletedBy = key.participant || key.remoteJid || originalFrom;
+
                 await ensureSettingsLoaded(deletedBy);
                 const mode = getSetting(deletedBy, 'ANTI_DELETE');
                 if (mode === 'off') continue;
+
                 let targetJid;
-                if (mode === 'on' || mode === 'same') targetJid = originalFrom;
-                else if (mode === 'inbox') targetJid = xnumber + '@s.whatsapp.net';
-                else continue;
+                if (mode === 'on' || mode === 'same') {
+                    targetJid = originalFrom;
+                } else if (mode === 'inbox') {
+                    targetJid = xnumber + '@s.whatsapp.net';
+                } else {
+                    continue;
+                }
+
                 const senderNum = deletedBy.split('@')[0];
                 const msgText = getMsgText(originalMek.message);
                 const msgType = getContentType(originalMek.message);
                 const caption = `🗑️ *Deleted Message Recovered*\n\n👤 From: @${senderNum}\n📍 Chat: ${originalFrom}\n⏱️ Mode: ${mode.toUpperCase()}`;
+
                 try {
-                    if (['imageMessage','videoMessage','audioMessage','stickerMessage','documentMessage'].includes(msgType)) {
+                    if (['imageMessage', 'videoMessage', 'audioMessage', 'stickerMessage', 'documentMessage'].includes(msgType)) {
                         await sock.forwardMessage(targetJid, originalMek, true);
                         await sock.sendMessage(targetJid, { text: caption, mentions: [deletedBy] });
                     } else {
@@ -699,6 +706,7 @@ async function Pair(number, res = null) {
                         mentions: [deletedBy]
                     }).catch(() => {});
                 }
+
                 deletedMsgStore.delete(msgId);
             }
         }
@@ -707,9 +715,14 @@ async function Pair(number, res = null) {
             try {
                 const keys = item.keys || (item.ids ? item.ids.map(id => ({ id, remoteJid: item.jid })) : []);
                 await handleDeletedMessage(keys);
-            } catch (e) { console.error('[ANTI-DELETE ERROR]', e); }
+            } catch (e) {
+                console.error('[ANTI-DELETE ERROR]', e);
+            }
         });
 
+        // ════════════════════════════════════════════════════════════════════
+        // MESSAGES.UPDATE — only for deletions (no anti‑edit)
+        // ════════════════════════════════════════════════════════════════════
         sock.ev.on('messages.update', async (updates) => {
             try {
                 const deletedKeys = updates
@@ -717,7 +730,9 @@ async function Pair(number, res = null) {
                     .map(u => u.key)
                     .filter(Boolean);
                 if (deletedKeys.length) await handleDeletedMessage(deletedKeys);
-            } catch (e) { console.error('[ANTI-DELETE UPDATE ERROR]', e); }
+            } catch (e) {
+                console.error('[ANTI-DELETE UPDATE ERROR]', e);
+            }
         });
 
     } catch (err) {
@@ -729,11 +744,11 @@ async function Pair(number, res = null) {
 
 async function restoreAllSessions() {
     try {
-        const sessions = await findAllSessions();   // <-- lowdb
+        const sessions = await Session.find();
         console.log(`Restoring ${sessions.length} session(s)...`);
         await Promise.all(
             sessions
-                .filter(s => s.sessionId)
+                .filter(s => { if (!s.sessionId) return false; return true; })
                 .map(async (s, index) => {
                     const number = s.sessionId.replace('dina_', '');
                     try {
