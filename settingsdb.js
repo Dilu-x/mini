@@ -53,6 +53,7 @@ async function initUserEnvIfMissing(userId) {
     ANTI_FAKE:        "off",
     WELCOME:          "off",
     AUTO_REPLY: "off",
+    CUSTOM_SONG_FOOTER: '▫️🎵 Check out this group for more songs!',
     GOODBYE:          "off",
     CREATE_NB:        userId
   };

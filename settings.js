@@ -22,6 +22,7 @@ const settingDefaults = {
     'ANTI_CALL':        'on',    // on | off
     'ANTI_DELETE':      'on',    // on | off | inbox | same
     'ANTI_EDIT':        'off',   // on | off
+    'CUSTOM_SONG_FOOTER': '▫️🎵 Check out this group for more songs!',
     'PRESENCE_TYPE':    'on',
     'PRESENCE_FAKE':    'both',
     'AUTO_REPLY': 'off',  // 'on' or 'off'

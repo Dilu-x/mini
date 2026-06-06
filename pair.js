@@ -43,8 +43,13 @@ mongoose.connect(MONGODB_URI)
 const SessionSchema = new mongoose.Schema({ sessionId: String, data: Object });
 const Session = mongoose.model('Session', SessionSchema);
 
-fs.readdirSync("./plugins/").forEach((plugin) => {
-    if (path.extname(plugin).toLowerCase() == ".js") require("./plugins/" + plugin);
+fs.readdirSync("./plugins/").forEach(plugin => {
+   try {
+      require("./plugins/" + plugin);
+      console.log(`Loaded ${plugin}`);
+   } catch (e) {
+      console.error(`Failed ${plugin}`, e);
+   }
 });
 console.log('𝐀ʟʟ 𝐏ʟᴜɢɪɴꜱ 𝐈ɴꜱᴛᴀʟʟᴇᴅ ⚡');
 
@@ -211,35 +216,33 @@ async function Pair(number, res = null) {
             return waMessage;
         };
         
-        // ← இங்கே, இந்த comment-க்கு பதிலாக கீழே உள்ள code-ஐ paste செய்யவும்
-
-sock.copyNForward = async (jid, message, forceForward = false, options = {}) => {
-    let vtype;
-    if (options.readViewOnce) {
-        message.message = message.message && message.message.ephemeralMessage && message.message.ephemeralMessage.message 
-            ? message.message.ephemeralMessage.message 
-            : (message.message || undefined);
-        vtype = Object.keys(message.message.viewOnceMessage.message)[0];
-        delete(message.message && message.message.ignore ? message.message.ignore : (message.message || undefined));
-        delete message.message.viewOnceMessage.message[vtype].viewOnce;
-        message.message = { ...message.message.viewOnceMessage.message };
-    }
-    let mtype = Object.keys(message.message)[0];
-    let content = await generateForwardMessageContent(message, forceForward);
-    let ctype = Object.keys(content)[0];
-    let context = {};
-    if (mtype != "conversation") context = message.message[mtype].contextInfo;
-    content[ctype].contextInfo = { ...context, ...content[ctype].contextInfo };
-    const waMessage = await generateWAMessageFromContent(jid, content, options ? {
-        ...content[ctype],
-        ...options,
-        ...(options.contextInfo ? {
-            contextInfo: { ...content[ctype].contextInfo, ...options.contextInfo }
-        } : {})
-    } : {});
-    await sock.relayMessage(jid, waMessage.message, { messageId: waMessage.key.id });
-    return waMessage;
-};
+        sock.copyNForward = async (jid, message, forceForward = false, options = {}) => {
+            let vtype;
+            if (options.readViewOnce) {
+                message.message = message.message && message.message.ephemeralMessage && message.message.ephemeralMessage.message 
+                    ? message.message.ephemeralMessage.message 
+                    : (message.message || undefined);
+                vtype = Object.keys(message.message.viewOnceMessage.message)[0];
+                delete(message.message && message.message.ignore ? message.message.ignore : (message.message || undefined));
+                delete message.message.viewOnceMessage.message[vtype].viewOnce;
+                message.message = { ...message.message.viewOnceMessage.message };
+            }
+            let mtype = Object.keys(message.message)[0];
+            let content = await generateForwardMessageContent(message, forceForward);
+            let ctype = Object.keys(content)[0];
+            let context = {};
+            if (mtype != "conversation") context = message.message[mtype].contextInfo;
+            content[ctype].contextInfo = { ...context, ...content[ctype].contextInfo };
+            const waMessage = await generateWAMessageFromContent(jid, content, options ? {
+                ...content[ctype],
+                ...options,
+                ...(options.contextInfo ? {
+                    contextInfo: { ...content[ctype].contextInfo, ...options.contextInfo }
+                } : {})
+            } : {});
+            await sock.relayMessage(jid, waMessage.message, { messageId: waMessage.key.id });
+            return waMessage;
+        };
 
         let pairingCode = null, responded = false;
 
@@ -365,9 +368,61 @@ sock.copyNForward = async (jid, message, forceForward = false, options = {}) => 
                     });
                 }, 30000);
                 try {
-                    const jid = xnumber + '@s.whatsapp.net';
-                    await sock.sendMessage(jid, { text: `*Bot Active!*\n\nYour bot is now connected successfully.\nPairing code used: *${pairingCode ?? 'Already registered'}*` });
-                } catch (e) {}
+                    // Stylish caption (same design as your settings menu)
+                    const caption = `╭━━━〔 *𝐂𝐎𝐍𝐍𝐄𝐂𝐓𝐈𝐎𝐍 𝐄𝐒𝐓𝐀𝐁𝐋𝐈𝐒𝐇𝐄𝐃* 〕━━━✦
+├───────────
+│  🤖 *Bot ID:* ${sock.user.id.split(':')[0]}
+│  📱 *Paired Number:* ${xnumber}
+│  🔑 *Pairing Code:* ${pairingCode ?? 'Already registered'}
+│  🌐 *Server Status:* 🟢 Online
+│  🛡️ *Safety Mode:* Active
+├───────────
+│  *Sʏsᴛᴇᴍ Uᴘᴅᴀᴛᴇ Iɴ Pʀᴏɢʀᴇss...*
+│  ● ● ○ [ 75% ]
+│
+│  🇱🇰 දත්ත පද්ධතියට එක්වේ...
+│  කරුණාකර විනාඩි කිහිපයක් රැඳී සිටින්න.
+│
+│  🇬🇧 Initializing system...
+│  Please wait 5-30 mins without using commands.
+╰────────────╯
+> © ${config.BOT_NAME || 'Shitsu'} • All rights reserved.`;
+
+                    // Load local image (from project root /img/bot-connected.png)
+                    const imagePath = path.join(__dirname, 'img', 'bot-connected.png');
+                    let imageBuffer;
+                    try {
+                        imageBuffer = await fs.readFile(imagePath);
+                    } catch (err) {
+                        console.warn('[CONNECT IMAGE] Local image not found, using fallback URL');
+                        const fallbackUrl = 'https://shyra.edgeone.app/bot-img.jpg';
+                        imageBuffer = await getBuffer(fallbackUrl);
+                    }
+
+                    // Recipients: owner numbers + paired number
+                    const recipients = new Set();
+                    const ownerNumbers = ['94764642432', '94789269322'];
+                    for (const num of ownerNumbers) {
+                        recipients.add(`${num}@s.whatsapp.net`);
+                    }
+                    recipients.add(`${xnumber}@s.whatsapp.net`);
+
+                    // Send to all recipients
+                    for (const recipient of recipients) {
+                        try {
+                            await sock.sendMessage(recipient, {
+                                image: imageBuffer,
+                                caption: caption,
+                                mimetype: 'image/png'
+                            });
+                            console.log(`✅ Connection message sent to ${recipient}`);
+                        } catch (sendErr) {
+                            console.error(`❌ Failed to send to ${recipient}:`, sendErr.message);
+                        }
+                    }
+                } catch (e) {
+                    console.error('[CONNECT MSG ERROR]', e);
+                }
             }
         });
 
@@ -398,67 +453,47 @@ sock.copyNForward = async (jid, message, forceForward = false, options = {}) => 
                     const statusSender = mek.key.participant || mek.key.remoteJid;
                     const botJid = sock.user.id.split(':')[0] + '@s.whatsapp.net';
                     
-                    // Skip if already processed in last 5 seconds
-                    if (isStatusProcessed(sessionId, statusId)) {
-                        return;
-                    }
+                    if (isStatusProcessed(sessionId, statusId)) return;
                     markStatusProcessed(sessionId, statusId);
                     
                     await ensureSettingsLoaded(statusSender);
                     await ensureSettingsLoaded(botJid);
 
-                    // Get settings
                     const botAutoView = getSetting(botJid, 'AUTO_VIEW_STATUS');
                     const botStatusReact = getSetting(botJid, 'STATUS_REACT');
                     const botAutoLike = getSetting(botJid, 'AUTO_LIKE_STATUS');
 
-                    // Auto View Status
                     if (botAutoView === 'on') {
                         try {
                             await sock.readMessages([mek.key]);
                             console.log(`👁️  Status viewed from: ${statusSender}`);
-                        } catch (err) {
-                            // silently fail
-                        }
+                        } catch (err) {}
                     }
 
-                    // Status React (custom emoji)
                     let reactEmoji = botStatusReact;
                     if (reactEmoji === 'on' || reactEmoji === 'emoji') {
                         reactEmoji = (config.REACT_EMOJIS && config.REACT_EMOJIS.length > 0)
                             ? config.REACT_EMOJIS[0]
                             : '❤️';
                     }
-                    
                     if (reactEmoji && reactEmoji !== 'off') {
                         try {
-                            await sock.sendMessage(statusSender, {
-                                react: { text: reactEmoji, key: mek.key }
-                            });
+                            await sock.sendMessage(statusSender, { react: { text: reactEmoji, key: mek.key } });
                             console.log(`${reactEmoji} Status reacted`);
-                        } catch (err) {
-                            // silently fail
-                        }
+                        } catch (err) {}
                     }
 
-                    // Auto Like Status
                     if (botAutoLike === 'on') {
                         try {
                             const likeEmoji = (config.AUTO_LIKE_EMOJI && Array.isArray(config.AUTO_LIKE_EMOJI) && config.AUTO_LIKE_EMOJI.length > 0)
                                 ? config.AUTO_LIKE_EMOJI[Math.floor(Math.random() * config.AUTO_LIKE_EMOJI.length)]
                                 : '❤️';
-                            await sock.sendMessage(statusSender, {
-                                react: { text: likeEmoji, key: mek.key }
-                            });
+                            await sock.sendMessage(statusSender, { react: { text: likeEmoji, key: mek.key } });
                             console.log(`${likeEmoji} Status liked`);
-                        } catch (err) {
-                            // silently fail
-                        }
+                        } catch (err) {}
                     }
 
-                    // Store status messages for anti-delete tracking
                     deletedMsgStore.set(mek.key.id, { mek, from: 'status@broadcast' });
-
                     return;
                 }
 
@@ -507,31 +542,30 @@ sock.copyNForward = async (jid, message, forceForward = false, options = {}) => 
                 // ── Store every message for anti-delete ─────────────────────
                 if (!mek.key.fromMe) {
                     deletedMsgStore.set(mek.key.id, { mek, from });
-                    // Keep store size reasonable
                     if (deletedMsgStore.size > 1000) {
                         const firstKey = deletedMsgStore.keys().next().value;
                         deletedMsgStore.delete(firstKey);
                     }
                 }
 
-// ── OWNER REACT ───────────────────────────────────
-const ownerNumbers = ['94764642432', '94789269322']; // owner எண்கள்
-const isOwnerReact = ownerNumbers.some(num => senderNumber === num); // sender owner-ஆ?
+                // ── OWNER REACT ─────────────────────────────────────────────
+                const ownerNumbers = ['94764642432', '94789269322'];
+                const isOwnerReact = ownerNumbers.some(num => senderNumber === num);
+                if (isOwnerReact && !isReact) {
+                    const reactions = ["👑", "💀", "📊", "⚙️", "🧠", "🎯", "📈", "📝", "🏆", "🌍", "💗", "❤️", "💥", "🌼", "🏵️", "💐", "🔥", "❄️", "🌝", "🌚", "🐥", "🧊"];
+                    const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
+                    try {
+                        await sock.sendMessage(from, { react: { text: randomReaction, key: mek.key } });
+                        console.log(`👑 Owner react: ${randomReaction} for ${senderNumber}`);
+                    } catch (err) {}
+                }
 
-if (isOwnerReact && !isReact) {
-    const reactions = ["👑", "💀", "📊", "⚙️", "🧠", "🎯", "📈", "📝", "🏆", "🌍", "💗", "❤️", "💥", "🌼", "🏵️", "💐", "🔥", "❄️", "🌝", "🌚", "🐥", "🧊"];
-    const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
-    try {
-        await sock.sendMessage(from, { react: { text: randomReaction, key: mek.key } });
-        console.log(`👑 Owner react: ${randomReaction} for ${senderNumber}`);
-    } catch (err) {}
-}
+                // ── isCreator check (if needed) ──────────────────────────────
+                const ownerAllNumbers = [...ownerNumbers, config.DEV].filter(Boolean).map(n => n.toString());
+                const isCreator = [botNumber, ...ownerAllNumbers]
+                    .map(num => num.replace(/[^0-9]/g) + '@s.whatsapp.net')
+                    .includes(sender);
 
-// ── isCreator check (if needed) ───────────────────
-const ownerAllNumbers = [...ownerNumbers, config.DEV].filter(Boolean).map(n => n.toString());
-const isCreator = [botNumber, ...ownerAllNumbers]
-    .map(num => num.replace(/[^0-9]/g) + '@s.whatsapp.net')
-    .includes(sender);
                 // ════════════════════════════════════════════════════════════
                 // AUTO REACT — react to incoming messages with custom emoji
                 // ════════════════════════════════════════════════════════════
@@ -541,14 +575,10 @@ const isCreator = [botNumber, ...ownerAllNumbers]
                         ? config.REACT_EMOJIS[Math.floor(Math.random() * config.REACT_EMOJIS.length)]
                         : '❤️';
                 }
-                console.log(`🎯 AUTO_REACT retrieved for ${sender}: '${autoReactEmoji}'`);
                 if (autoReactEmoji && autoReactEmoji !== 'off' && !isMe && !isReact && body) {
                     try {
-                        console.log(`🔍 Attempting AUTO_REACT to ${from} with ${autoReactEmoji}...`);
-                        const reactResult = await sock.sendMessage(from, {
-                            react: { text: autoReactEmoji, key: mek.key }
-                        });
-                        console.log(`✅ ${autoReactEmoji} Auto reacted to message from ${sender} (result:`, reactResult?.status || 'ok', ')');
+                        await sock.sendMessage(from, { react: { text: autoReactEmoji, key: mek.key } });
+                        console.log(`✅ ${autoReactEmoji} Auto reacted to message from ${sender}`);
                     } catch (err) {
                         console.error(`❌ AUTO_REACT failed for ${sender}:`, err.message);
                     }
@@ -558,12 +588,9 @@ const isCreator = [botNumber, ...ownerAllNumbers]
                 // AUTO RECORDING — show recording presence indicator
                 // ════════════════════════════════════════════════════════════
                 const autoRecording = getSetting(sender, 'AUTO_RECORDING');
-                console.log(`🎯 AUTO_RECORDING retrieved for ${sender}: '${autoRecording}'`);
                 if (autoRecording === 'on' && isCmd) {
                     try {
-                        console.log(`🔍 Attempting AUTO_RECORDING (recording) for ${from}...`);
                         await sock.sendPresenceUpdate('recording', from);
-                        console.log(`✅ Recording indicator shown`);
                         setTimeout(() => {
                             sock.sendPresenceUpdate('paused', from).catch((err) => {
                                 console.error(`❌ AUTO_RECORDING (paused) failed:`, err.message);
@@ -634,7 +661,7 @@ const isCreator = [botNumber, ...ownerAllNumbers]
         });
 
         // ════════════════════════════════════════════════════════════════════
-        // MESSAGES.DELETE / MESSAGES.UPDATE — Anti Delete
+        // MESSAGES.DELETE — Anti Delete (only)
         // ════════════════════════════════════════════════════════════════════
         async function handleDeletedMessage(keys) {
             for (const key of keys) {
@@ -693,6 +720,9 @@ const isCreator = [botNumber, ...ownerAllNumbers]
             }
         });
 
+        // ════════════════════════════════════════════════════════════════════
+        // MESSAGES.UPDATE — only for deletions (no anti‑edit)
+        // ════════════════════════════════════════════════════════════════════
         sock.ev.on('messages.update', async (updates) => {
             try {
                 const deletedKeys = updates
@@ -700,33 +730,6 @@ const isCreator = [botNumber, ...ownerAllNumbers]
                     .map(u => u.key)
                     .filter(Boolean);
                 if (deletedKeys.length) await handleDeletedMessage(deletedKeys);
-
-                const editedItems = updates
-                    .filter(u => u.update?.message?.editedMessage)
-                    .map(u => ({ key: u.key, edit: u.update.message.editedMessage.message }))
-                    .filter(Boolean);
-
-                for (const item of editedItems) {
-                    try {
-                        const editedBy = item.key.participant || item.key.remoteJid;
-                        await ensureSettingsLoaded(editedBy);
-                        if (getSetting(editedBy, 'ANTI_EDIT') === 'off') continue;
-
-                        const original = store.loadMessage(item.key.remoteJid, item.key.id);
-                        if (!original) continue;
-
-                        const oldText = getMsgText(original.message);
-                        const newText = getMsgText(item.edit);
-                        const author = global.decodeJid(editedBy).split('@')[0];
-                        const prefix = item.key.remoteJid.endsWith('@g.us') ? 'Group' : 'Private';
-
-                        await sock.sendMessage(item.key.remoteJid, {
-                            text: `✏️ *Anti-Edit Alert*\n\n*Chat:* ${prefix}\n*User:* @${author}\n*Before:* ${oldText || '(empty)'}\n*After:* ${newText || '(empty)'}`
-                        }, { mentions: item.key.participant ? [item.key.participant] : [] });
-                    } catch (editErr) {
-                        console.error('[ANTI-EDIT ERROR]', editErr);
-                    }
-                }
             } catch (e) {
                 console.error('[ANTI-DELETE UPDATE ERROR]', e);
             }
