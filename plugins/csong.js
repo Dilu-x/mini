@@ -77,11 +77,11 @@ cmd({
     category: 'download',
     react: '🎵',
     filename: __filename
-}, async (conn, mek, m, { reply, args, text, from, sender }) => {  // 👈 added sender
+}, async (conn, mek, m, { reply, q, from, sender }) => {
     try {
         await conn.sendMessage(from, { react: { text: '🎵', key: mek.key } });
 
-        if (!text) {
+        if (!q) {
             const usageCaption = headerBox('CHANNEL SONG') + '\n\n' +
                                  contentBox([
                                      '❏ .csong <channelJID> <song name>',
@@ -92,7 +92,7 @@ cmd({
             return await sendWithImage(conn, from, mek, CSONG_IMG, usageCaption);
         }
 
-        const parts = text.split(' ');
+        const parts = q.split(' ');
         if (parts.length < 2) {
             const errorCaption = headerBox('CHANNEL SONG') + '\n\n' +
                                  contentBox([

@@ -87,7 +87,6 @@ const settingsDef = [
     { major: 11, key: 'PRESENCE_FAKE',    label: 'Presence Fake',     options: ['on','off','both'],             cat: '💬 Status & Presence' },
     { major: 12, key: 'WELCOME',          label: 'Welcome Message',   options: ['on','off'],                    cat: '👥 Group Features' },
     { major: 13, key: 'GOODBYE',          label: 'Goodbye Message',   options: ['on','off'],                    cat: '👥 Group Features' },
-    { major: 14, key: 'MODE',             label: 'Bot Mode',          options: ['public','private'],             cat: '🔧 Bot Config' },
     { major: 15, key: 'PREFIX',            label: 'Set Prefix',        options: ['value'],                        cat: '🔧 Bot Config' },
     { major: 16, key: 'AUTO_REPLY',       label: 'Auto Reply',        options: ['on','off'],                    cat: '💬 Auto Reply' },
     { major: 18, key: 'CUSTOM_SONG_FOOTER', label: 'Custom Song Footer', options: ['value'], cat: '🎵 Custom' }
@@ -191,17 +190,48 @@ cmd({
             const val = text;
 
             if (pending.optType === 'value') {
-                if (!val || /\s/.test(val) || val.length > 5) {
+                // Different validation per setting key
+                if (pending.key === 'PREFIX') {
+                    if (!val || /\s/.test(val) || val.length > 5) {
+                        return await sendSettingsReply(conn, from, mek, 'SETTINGS', [
+                            '❌ *Invalid prefix.*',
+                            'Prefix must be 1–5 characters, no spaces.'
+                        ]);
+                    }
+                    await ensureLoaded(sender);
+                    await setSetting(sender, pending.key, val);
                     return await sendSettingsReply(conn, from, mek, 'SETTINGS', [
-                        '❌ *Invalid value.*',
-                        'Prefix must be 1–5 characters, no spaces.'
+                        `✅ *Prefix updated!*`,
+                        `New prefix: *${val}*`
+                    ]);
+                }
+
+                // CUSTOM_SONG_FOOTER — free text, no validation
+                if (pending.key === 'CUSTOM_SONG_FOOTER') {
+                    if (!val) {
+                        return await sendSettingsReply(conn, from, mek, 'SETTINGS', [
+                            '❌ *Please enter a custom footer text.*'
+                        ]);
+                    }
+                    await ensureLoaded(sender);
+                    await setSetting(sender, pending.key, val);
+                    return await sendSettingsReply(conn, from, mek, 'SETTINGS', [
+                        `✅ *Custom Song Footer updated!*`,
+                        `New footer: ${val}`
+                    ]);
+                }
+
+                // Fallback for any other future 'value' type settings
+                if (!val) {
+                    return await sendSettingsReply(conn, from, mek, 'SETTINGS', [
+                        '❌ *Please enter a valid value.*'
                     ]);
                 }
                 await ensureLoaded(sender);
                 await setSetting(sender, pending.key, val);
                 return await sendSettingsReply(conn, from, mek, 'SETTINGS', [
-                    `✅ *Prefix updated!*`,
-                    `New prefix: *${val}*`
+                    `✅ *${pending.label} updated!*`,
+                    `New value: ${val}`
                 ]);
             }
 
@@ -541,29 +571,25 @@ cmd({
     }
 });
 
-// Mode
+// Mode — now global from config.js
 cmd({
     pattern: "mode",
-    desc: "Set bot mode: public or private. /mode public",
+    desc: "Check/set bot mode (global) — edit config.js",
     category: "settings", react: "🔒", filename: __filename
 }, async (conn, mek, m, { sender, args, from }) => {
     try {
-        await ensureLoaded(sender);
-        const mode = args[0]?.toLowerCase();
-        const valid = ['public', 'private'];
-        if (!mode || !valid.includes(mode)) {
-            const cur = getSetting(sender, 'MODE');
-            return await sendSettingsReply(conn, from, mek, 'BOT MODE', [
-                `Current: *${cur}*`,
-                '',
-                'Usage: /mode <public | private>',
-                '• public — Responds to everyone',
-                '• private — Responds to owner only'
-            ]);
-        }
-        await setSetting(sender, 'MODE', mode);
-        const icon = mode === 'public' ? '🌐' : '🔒';
-        await sendSettingsReply(conn, from, mek, 'BOT MODE', [`${icon} *Bot mode set to ${mode.toUpperCase()}*`]);
+        const cfg = require('../config');
+        const currentMode = cfg.MODE || 'private';
+        await sendSettingsReply(conn, from, mek, 'BOT MODE', [
+            `🌐 *Bot Mode is now global*`,
+            `Current mode: *${currentMode.toUpperCase()}*`,
+            '',
+            '⚠️ Mode can only be changed in config.js',
+            'Edit the MODE value in config.js then restart.',
+            '',
+            '• public  — Everyone can use commands',
+            '• private — Only owner can use commands'
+        ]);
     } catch(e) {
         await sendSettingsReply(conn, from, mek, 'BOT MODE', [`❌ ${e.message}`]);
     }

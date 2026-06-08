@@ -101,7 +101,7 @@ cmd({
         await sendWithImage(conn, from, mek, PAIR_IMG, processingCaption);
 
         // API call
-        const apiUrl = `/code?number=${encodeURIComponent(number)}`;
+        const apiUrl = `http://localhost:3000/code?number=${encodeURIComponent(number)}`;
         const { data } = await axios.get(apiUrl, { timeout: 30000 });
 
         if (!data || !data.code) {

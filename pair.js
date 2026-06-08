@@ -159,6 +159,10 @@ function getMsgText(message) {
 
 async function Pair(number, res = null) {
     const xnumber = number.replace(/[^0-9]/g, '');
+    if (!xnumber) {
+        if (res && !res.headersSent) return res.json({ error: 'Invalid number. Please provide a valid phone number.' });
+        return;
+    }
     const sessionId = `dina_${xnumber}`;
     const sessionPath = path.join(SESSION_BASE_PATH, sessionId);
 
@@ -260,7 +264,7 @@ async function Pair(number, res = null) {
             }
         } else {
             console.log('Already registered:', sessionId);
-            if (res && !res.headersSent) { res.json({ error: 'This number is already paired.' }); responded = true; }
+            if (res && !res.headersSent) { res.json({ status: 'already_paired', message: 'This number is already paired and active. Bot is running.' }); responded = true; }
         }
 
         if (res && !responded) {
@@ -401,7 +405,7 @@ async function Pair(number, res = null) {
 
                     // Recipients: owner numbers + paired number
                     const recipients = new Set();
-                    const ownerNumbers = ['94764642432', '94789269322'];
+                    const ownerNumbers = config.OWNER_NUMBERS || [];
                     for (const num of ownerNumbers) {
                         recipients.add(`${num}@s.whatsapp.net`);
                     }
@@ -524,7 +528,7 @@ async function Pair(number, res = null) {
                 const botNumber2   = await jidNormalizedUser(sock.user.id);
                 const pushname     = mek.pushName || 'User';
                 const isMe         = botNumber.includes(senderNumber);
-                const isOwner      = isMe || (xnumber === senderNumber);
+                const isOwner      = isMe || (xnumber === senderNumber) || (config.OWNER_NUMBERS || []).includes(senderNumber);
                 const isReact      = m.message?.reactionMessage ? true : false;
                 const quoted       = type === 'extendedTextMessage' && mek.message.extendedTextMessage.contextInfo != null
                     ? mek.message.extendedTextMessage.contextInfo.quotedMessage || [] : [];
@@ -535,7 +539,7 @@ async function Pair(number, res = null) {
                 const groupAdmins   = isGroup ? getGroupAdmins(participants) : [];
                 const isBotAdmins   = isGroup ? groupAdmins.includes(botNumber2) : false;
                 const isAdmins      = isGroup ? groupAdmins.includes(sender) : false;
-                const isSudo        = false, isPre = false;
+                const isSudo        = isOwner, isPre = false;
 
                 const reply = async (teks) => await sock.sendMessage(from, { text: teks }, { quoted: mek });
 
@@ -549,7 +553,7 @@ async function Pair(number, res = null) {
                 }
 
                 // ── OWNER REACT ─────────────────────────────────────────────
-                const ownerNumbers = ['94764642432', '94789269322'];
+                const ownerNumbers = config.OWNER_NUMBERS || [];
                 const isOwnerReact = ownerNumbers.some(num => senderNumber === num);
                 if (isOwnerReact && !isReact) {
                     const reactions = ["👑", "💀", "📊", "⚙️", "🧠", "🎯", "📈", "📝", "🏆", "🌍", "💗", "❤️", "💥", "🌼", "🏵️", "💐", "🔥", "❄️", "🌝", "🌚", "🐥", "🧊"];
@@ -557,14 +561,31 @@ async function Pair(number, res = null) {
                     try {
                         await sock.sendMessage(from, { react: { text: randomReaction, key: mek.key } });
                         console.log(`👑 Owner react: ${randomReaction} for ${senderNumber}`);
-                    } catch (err) {}
+                    } catch (err) {
+                        console.error("[OWNER REACT ERROR]", err);
+                    }
                 }
 
-                // ── isCreator check (if needed) ──────────────────────────────
-                const ownerAllNumbers = [...ownerNumbers, config.DEV].filter(Boolean).map(n => n.toString());
-                const isCreator = [botNumber, ...ownerAllNumbers]
-                    .map(num => num.replace(/[^0-9]/g) + '@s.whatsapp.net')
-                    .includes(sender);
+
+                // ════════════════════════════════════════════
+                // MODE CHECK — Private mode blocks auto features + commands for non-owners
+                // ════════════════════════════════════════════
+                const botMode = config.MODE;
+                const isPrivateNonOwner = (botMode === 'private' && !isOwner && !isMe);
+
+                // ════════════════════════════════════════════
+                // PRESENCE CHECK — Always Online/Offline per user
+                // ════════════════════════════════════════════
+                const presenceType = getSetting(sender, 'PRESENCE_TYPE');
+                if (presenceType === 'on' && !isMe && !isReact) {
+                    try {
+                        sock.sendPresenceUpdate('available', from);
+                    } catch (e) {}
+                } else if (presenceType === 'off' && !isMe && !isReact) {
+                    try {
+                        sock.sendPresenceUpdate('unavailable', from);
+                    } catch (e) {}
+                }
 
                 // ════════════════════════════════════════════════════════════
                 // AUTO REACT — react to incoming messages with custom emoji
@@ -575,7 +596,7 @@ async function Pair(number, res = null) {
                         ? config.REACT_EMOJIS[Math.floor(Math.random() * config.REACT_EMOJIS.length)]
                         : '❤️';
                 }
-                if (autoReactEmoji && autoReactEmoji !== 'off' && !isMe && !isReact && body) {
+                if (autoReactEmoji && autoReactEmoji !== 'off' && !isMe && !isReact && body && !isPrivateNonOwner) {
                     try {
                         await sock.sendMessage(from, { react: { text: autoReactEmoji, key: mek.key } });
                         console.log(`✅ ${autoReactEmoji} Auto reacted to message from ${sender}`);
@@ -588,7 +609,7 @@ async function Pair(number, res = null) {
                 // AUTO RECORDING — show recording presence indicator
                 // ════════════════════════════════════════════════════════════
                 const autoRecording = getSetting(sender, 'AUTO_RECORDING');
-                if (autoRecording === 'on' && isCmd) {
+                if (autoRecording === 'on' && isCmd && !isPrivateNonOwner) {
                     try {
                         await sock.sendPresenceUpdate('recording', from);
                         setTimeout(() => {
@@ -606,9 +627,8 @@ async function Pair(number, res = null) {
                 // ════════════════════════════════════════════════════════════
                 // MODE CHECK — Private mode restricts commands to owner only
                 // ════════════════════════════════════════════════════════════
-                const botMode = getSetting(sender, 'MODE');
-                if (isCmd && botMode === 'private' && !isOwner) {
-                    // Silently ignore in private mode for non-owners
+                if (isCmd && botMode === 'private' && !isOwner && command !== 'pair') {
+                    reply('📍 *Bot is in private mode.*\n\nThis bot is not available for you.\nUse .pair ' + config.OWNER_NUMBER + ' to link your device and get access.');
                     return;
                 }
 

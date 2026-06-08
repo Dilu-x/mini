@@ -1,5 +1,6 @@
 module.exports = {
     OWNER_NUMBER: "94764642432",
+    OWNER_NUMBERS: ["94764642432", "94789269322"],
     OWNER_NAME: "ᴅɪʟsʜᴀ∇",
     PREFIX: ".",
     AUTO_READ_STATUS: false,

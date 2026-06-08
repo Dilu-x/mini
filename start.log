@@ -1,0 +1,2247 @@
+
+> dina-bot@1.0.0 start
+> node pair.js
+
+Loaded ACD_GROUP.js
+Loaded ACD_MAIN.js
+Loaded ACD_SETTINGS.js
+Loaded ACD_VV.js
+Loaded Spotify.js
+Loaded ai-img.js
+Loaded ai.js
+Loaded alive.js
+Loaded anime-quotes.js
+Loaded apk.js
+Loaded auto-reply.js
+Loaded ba.js
+Loaded c-logo.js
+Loaded csong.js
+Loaded dilu
+Loaded enchage.js
+Loaded fb.js
+Loaded fun.js
+Loaded gitclone.js
+Loaded goggle.js
+Loaded ig.js
+Loaded mddl.js
+Loaded media-tool.js
+Loaded menu
+Loaded menu.js
+Loaded nano-ed2.js
+Loaded nano-edit.js
+Loaded owner.js
+Loaded pair.js
+Loaded play.js
+Loaded presence.js
+Loaded reactions.js
+Loaded search.js
+Loaded song-fotter.js
+Loaded song.js
+Loaded terabox.js
+Loaded text-maker.js
+Loaded tiktok.js
+Loaded tools.js
+Loaded transcript.js
+Loaded upscal.js
+Loaded wormgpt.js
+Loaded yt-song.js
+Loaded ytmp3.js
+Loaded ytmp4.js
+Loaded ytsearch.js
+𝐀ʟʟ 𝐏ʟᴜɢɪɴꜱ 𝐈ɴꜱᴛᴀʟʟᴇᴅ ⚡
+Server running on port 3000
+𝐌ᴏɴɢᴏ𝐃𝐁 𝐂ᴏɴɴᴇᴄᴛᴇᴅ ✅
+Restoring 1 session(s)...
+✅ 𝐑ᴇꜱᴛᴏʀᴇ: dina_94788724423
+Already registered: dina_94788724423
+✅ 𝐂onnected: dina_94788724423
+[CONNECT IMAGE] Local image not found, using fallback URL
+AxiosError: read ECONNRESET
+    at AxiosError.from (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:1288:24)
+    at RedirectableRequest.handleRequestError (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:3808:25)
+    at RedirectableRequest.emit (node:events:508:28)
+    at eventHandlers.<computed> (/workspaces/mini/node_modules/follow-redirects/index.js:56:24)
+    at ClientRequest.emit (node:events:508:28)
+    at emitErrorEvent (node:_http_client:108:11)
+    at TLSSocket.socketErrorListener (node:_http_client:575:5)
+    at TLSSocket.emit (node:events:520:35)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at Axios.request (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:5133:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getBuffer (/workspaces/mini/lib/functions.js:10:13)
+    at async EventEmitter.<anonymous> (/workspaces/mini/pair.js:403:39) {
+  isAxiosError: true,
+  code: 'ECONNRESET',
+  config: [Object: null prototype] {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true,
+      advertiseZstdAcceptEncoding: false
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined,
+      DNT: '1',
+      'Upgrade-Insecure-Request': '1',
+      'User-Agent': 'axios/1.17.0',
+      'Accept-Encoding': 'gzip, compress, deflate, br'
+    },
+    method: 'get',
+    url: 'https://shyra.edgeone.app/bot-img.jpg',
+    responseType: 'arraybuffer',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: <ref *1> Writable {
+    _events: {
+      close: undefined,
+      error: [Function: handleRequestError],
+      prefinish: undefined,
+      finish: undefined,
+      drain: undefined,
+      response: [Function: handleResponse],
+      socket: [Array],
+      abort: undefined
+    },
+    _writableState: WritableState {
+      highWaterMark: 65536,
+      length: 0,
+      corked: 0,
+      onwrite: [Function: bound onwrite],
+      writelen: 0,
+      bufferedIndex: 0,
+      pendingcb: 0,
+      Symbol(kState): 17581054,
+      Symbol(kBufferedValue): null,
+      Symbol(kErroredValue): [Error]
+    },
+    _maxListeners: undefined,
+    _options: {
+      maxRedirects: 21,
+      maxBodyLength: Infinity,
+      protocol: 'https:',
+      path: '/bot-img.jpg',
+      method: 'GET',
+      headers: [Object: null prototype],
+      agents: [Object],
+      auth: undefined,
+      family: undefined,
+      beforeRedirect: [Function: dispatchBeforeRedirect],
+      beforeRedirects: [Object: null prototype],
+      http2Options: undefined,
+      hostname: 'shyra.edgeone.app',
+      port: '',
+      agent: undefined,
+      insecureHTTPParser: false,
+      nativeProtocols: [Object],
+      sensitiveHeaders: [],
+      pathname: '/bot-img.jpg'
+    },
+    _ended: true,
+    _ending: true,
+    _redirectCount: 0,
+    _redirects: [],
+    _requestBodyLength: 0,
+    _requestBodyBuffers: [],
+    _eventsCount: 3,
+    _onNativeResponse: [Function (anonymous)],
+    _headerFilter: /^(?:Authorization|Proxy-Authorization|Cookie)$/i,
+    _currentRequest: ClientRequest {
+      _events: [Object: null prototype],
+      _eventsCount: 2,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      destroyed: true,
+      _last: true,
+      chunkedEncoding: false,
+      shouldKeepAlive: true,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: false,
+      sendDate: false,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      strictContentLength: false,
+      _contentLength: 0,
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      _closed: false,
+      _header: 'GET /bot-img.jpg HTTP/1.1\r\n' +
+        'Accept: application/json, text/plain, */*\r\n' +
+        'DNT: 1\r\n' +
+        'Upgrade-Insecure-Request: 1\r\n' +
+        'User-Agent: axios/1.17.0\r\n' +
+        'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+        'Host: shyra.edgeone.app\r\n' +
+        'Connection: keep-alive\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: nop],
+      agent: [Agent],
+      socketPath: undefined,
+      method: 'GET',
+      maxHeaderSize: undefined,
+      insecureHTTPParser: false,
+      joinDuplicateHeaders: undefined,
+      path: '/bot-img.jpg',
+      _ended: false,
+      res: null,
+      aborted: false,
+      timeoutCb: [Function: emitRequestTimeout],
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'shyra.edgeone.app',
+      protocol: 'https:',
+      _redirectable: [Circular *1],
+      Symbol(shapeMode): false,
+      Symbol(kCapture): false,
+      Symbol(kBytesWritten): 0,
+      Symbol(kNeedDrain): false,
+      Symbol(corked): 0,
+      Symbol(kChunkedBuffer): [],
+      Symbol(kChunkedLength): 0,
+      Symbol(kSocket): [TLSSocket],
+      Symbol(kOutHeaders): [Object: null prototype],
+      Symbol(errored): null,
+      Symbol(kHighWaterMark): 65536,
+      Symbol(kRejectNonStandardBodyWrites): false,
+      Symbol(kUniqueHeaders): null,
+      Symbol(kError): [Error]
+    },
+    _currentUrl: 'https://shyra.edgeone.app/bot-img.jpg',
+    _timeout: null,
+    Symbol(shapeMode): true,
+    Symbol(kCapture): false
+  },
+  cause: Error: read ECONNRESET
+      at TLSWrap.onStreamRead (node:internal/stream_base_commons:216:20) {
+    errno: -104,
+    code: 'ECONNRESET',
+    syscall: 'read'
+  }
+}
+❌ Failed to send to 94764642432@s.whatsapp.net: Cannot use 'in' operator to search for 'stream' in undefined
+❌ Failed to send to 94789269322@s.whatsapp.net: Cannot use 'in' operator to search for 'stream' in undefined
+❌ Failed to send to 94788724423@s.whatsapp.net: Cannot use 'in' operator to search for 'stream' in undefined
+⚙️ Settings loaded: 120363392849741172@newsletter
+💾 𝐒aved: dina_94788724423
+Failed to decrypt message with any known session...
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Failed to decrypt message with any known session...
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+Session error:Error: Bad MAC Error: Bad MAC
+    at Object.verifyMAC (/workspaces/mini/node_modules/libsignal/src/crypto.js:87:15)
+    at SessionCipher.doDecryptWhisperMessage (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:250:16)
+    at async SessionCipher.decryptWithSessions (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:147:29)
+    at async 257600025276503_1.0 [as awaitable] (/workspaces/mini/node_modules/libsignal/src/session_cipher.js:171:28)
+    at async _asyncQueueExecutor (/workspaces/mini/node_modules/libsignal/src/queue_job.js:20:29)
+⚙️ Settings loaded: 94788724423@s.whatsapp.net
+AxiosError: connect ECONNREFUSED 43.168.176.154:443
+    at AxiosError.from (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:1288:24)
+    at RedirectableRequest.handleRequestError (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:3808:25)
+    at RedirectableRequest.emit (node:events:508:28)
+    at eventHandlers.<computed> (/workspaces/mini/node_modules/follow-redirects/index.js:56:24)
+    at ClientRequest.emit (node:events:508:28)
+    at emitErrorEvent (node:_http_client:108:11)
+    at TLSSocket.socketErrorListener (node:_http_client:575:5)
+    at TLSSocket.emit (node:events:520:35)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at Axios.request (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:5133:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getBuffer (/workspaces/mini/lib/functions.js:10:13)
+    at async Object.function (/workspaces/mini/plugins/ACD_MAIN.js:39:28) {
+  isAxiosError: true,
+  code: 'ECONNREFUSED',
+  config: [Object: null prototype] {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true,
+      advertiseZstdAcceptEncoding: false
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined,
+      DNT: '1',
+      'Upgrade-Insecure-Request': '1',
+      'User-Agent': 'axios/1.17.0',
+      'Accept-Encoding': 'gzip, compress, deflate, br'
+    },
+    method: 'get',
+    url: 'https://shyra.edgeone.app/bot-img.jpg',
+    responseType: 'arraybuffer',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: <ref *1> Writable {
+    _events: {
+      close: undefined,
+      error: [Function: handleRequestError],
+      prefinish: undefined,
+      finish: undefined,
+      drain: undefined,
+      response: [Function: handleResponse],
+      socket: [Array],
+      abort: undefined
+    },
+    _writableState: WritableState {
+      highWaterMark: 65536,
+      length: 0,
+      corked: 0,
+      onwrite: [Function: bound onwrite],
+      writelen: 0,
+      bufferedIndex: 0,
+      pendingcb: 0,
+      Symbol(kState): 17581054,
+      Symbol(kBufferedValue): null,
+      Symbol(kErroredValue): [Error]
+    },
+    _maxListeners: undefined,
+    _options: {
+      maxRedirects: 21,
+      maxBodyLength: Infinity,
+      protocol: 'https:',
+      path: '/bot-img.jpg',
+      method: 'GET',
+      headers: [Object: null prototype],
+      agents: [Object],
+      auth: undefined,
+      family: undefined,
+      beforeRedirect: [Function: dispatchBeforeRedirect],
+      beforeRedirects: [Object: null prototype],
+      http2Options: undefined,
+      hostname: 'shyra.edgeone.app',
+      port: '',
+      agent: undefined,
+      insecureHTTPParser: false,
+      nativeProtocols: [Object],
+      sensitiveHeaders: [],
+      pathname: '/bot-img.jpg'
+    },
+    _ended: true,
+    _ending: true,
+    _redirectCount: 0,
+    _redirects: [],
+    _requestBodyLength: 0,
+    _requestBodyBuffers: [],
+    _eventsCount: 3,
+    _onNativeResponse: [Function (anonymous)],
+    _headerFilter: /^(?:Authorization|Proxy-Authorization|Cookie)$/i,
+    _currentRequest: ClientRequest {
+      _events: [Object: null prototype],
+      _eventsCount: 2,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      destroyed: true,
+      _last: true,
+      chunkedEncoding: false,
+      shouldKeepAlive: true,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: false,
+      sendDate: false,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      strictContentLength: false,
+      _contentLength: 0,
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      _closed: false,
+      _header: 'GET /bot-img.jpg HTTP/1.1\r\n' +
+        'Accept: application/json, text/plain, */*\r\n' +
+        'DNT: 1\r\n' +
+        'Upgrade-Insecure-Request: 1\r\n' +
+        'User-Agent: axios/1.17.0\r\n' +
+        'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+        'Host: shyra.edgeone.app\r\n' +
+        'Connection: keep-alive\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: nop],
+      agent: [Agent],
+      socketPath: undefined,
+      method: 'GET',
+      maxHeaderSize: undefined,
+      insecureHTTPParser: false,
+      joinDuplicateHeaders: undefined,
+      path: '/bot-img.jpg',
+      _ended: false,
+      res: null,
+      aborted: false,
+      timeoutCb: [Function: emitRequestTimeout],
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'shyra.edgeone.app',
+      protocol: 'https:',
+      _redirectable: [Circular *1],
+      Symbol(shapeMode): false,
+      Symbol(kCapture): false,
+      Symbol(kBytesWritten): 0,
+      Symbol(kNeedDrain): false,
+      Symbol(corked): 0,
+      Symbol(kChunkedBuffer): [],
+      Symbol(kChunkedLength): 0,
+      Symbol(kSocket): [TLSSocket],
+      Symbol(kOutHeaders): [Object: null prototype],
+      Symbol(errored): null,
+      Symbol(kHighWaterMark): 65536,
+      Symbol(kRejectNonStandardBodyWrites): false,
+      Symbol(kUniqueHeaders): null,
+      Symbol(kError): [Error]
+    },
+    _currentUrl: 'https://shyra.edgeone.app/bot-img.jpg',
+    _timeout: null,
+    Symbol(shapeMode): true,
+    Symbol(kCapture): false
+  },
+  cause: Error: connect ECONNREFUSED 43.168.176.154:443
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1645:16) {
+    errno: -111,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '43.168.176.154',
+    port: 443
+  }
+}
+💾 𝐒aved: dina_94788724423
+AxiosError: connect ECONNREFUSED 43.168.176.154:443
+    at AxiosError.from (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:1288:24)
+    at RedirectableRequest.handleRequestError (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:3808:25)
+    at RedirectableRequest.emit (node:events:508:28)
+    at eventHandlers.<computed> (/workspaces/mini/node_modules/follow-redirects/index.js:56:24)
+    at ClientRequest.emit (node:events:508:28)
+    at emitErrorEvent (node:_http_client:108:11)
+    at TLSSocket.socketErrorListener (node:_http_client:575:5)
+    at TLSSocket.emit (node:events:520:35)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at Axios.request (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:5133:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getBuffer (/workspaces/mini/lib/functions.js:10:13)
+    at async Object.function (/workspaces/mini/plugins/ACD_MAIN.js:39:28) {
+  isAxiosError: true,
+  code: 'ECONNREFUSED',
+  config: [Object: null prototype] {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true,
+      advertiseZstdAcceptEncoding: false
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined,
+      DNT: '1',
+      'Upgrade-Insecure-Request': '1',
+      'User-Agent': 'axios/1.17.0',
+      'Accept-Encoding': 'gzip, compress, deflate, br'
+    },
+    method: 'get',
+    url: 'https://shyra.edgeone.app/bot-img.jpg',
+    responseType: 'arraybuffer',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: <ref *1> Writable {
+    _events: {
+      close: undefined,
+      error: [Function: handleRequestError],
+      prefinish: undefined,
+      finish: undefined,
+      drain: undefined,
+      response: [Function: handleResponse],
+      socket: [Array],
+      abort: undefined
+    },
+    _writableState: WritableState {
+      highWaterMark: 65536,
+      length: 0,
+      corked: 0,
+      onwrite: [Function: bound onwrite],
+      writelen: 0,
+      bufferedIndex: 0,
+      pendingcb: 0,
+      Symbol(kState): 17581054,
+      Symbol(kBufferedValue): null,
+      Symbol(kErroredValue): [Error]
+    },
+    _maxListeners: undefined,
+    _options: {
+      maxRedirects: 21,
+      maxBodyLength: Infinity,
+      protocol: 'https:',
+      path: '/bot-img.jpg',
+      method: 'GET',
+      headers: [Object: null prototype],
+      agents: [Object],
+      auth: undefined,
+      family: undefined,
+      beforeRedirect: [Function: dispatchBeforeRedirect],
+      beforeRedirects: [Object: null prototype],
+      http2Options: undefined,
+      hostname: 'shyra.edgeone.app',
+      port: '',
+      agent: undefined,
+      insecureHTTPParser: false,
+      nativeProtocols: [Object],
+      sensitiveHeaders: [],
+      pathname: '/bot-img.jpg'
+    },
+    _ended: true,
+    _ending: true,
+    _redirectCount: 0,
+    _redirects: [],
+    _requestBodyLength: 0,
+    _requestBodyBuffers: [],
+    _eventsCount: 3,
+    _onNativeResponse: [Function (anonymous)],
+    _headerFilter: /^(?:Authorization|Proxy-Authorization|Cookie)$/i,
+    _currentRequest: ClientRequest {
+      _events: [Object: null prototype],
+      _eventsCount: 2,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      destroyed: true,
+      _last: true,
+      chunkedEncoding: false,
+      shouldKeepAlive: true,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: false,
+      sendDate: false,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      strictContentLength: false,
+      _contentLength: 0,
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      _closed: false,
+      _header: 'GET /bot-img.jpg HTTP/1.1\r\n' +
+        'Accept: application/json, text/plain, */*\r\n' +
+        'DNT: 1\r\n' +
+        'Upgrade-Insecure-Request: 1\r\n' +
+        'User-Agent: axios/1.17.0\r\n' +
+        'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+        'Host: shyra.edgeone.app\r\n' +
+        'Connection: keep-alive\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: nop],
+      agent: [Agent],
+      socketPath: undefined,
+      method: 'GET',
+      maxHeaderSize: undefined,
+      insecureHTTPParser: false,
+      joinDuplicateHeaders: undefined,
+      path: '/bot-img.jpg',
+      _ended: false,
+      res: null,
+      aborted: false,
+      timeoutCb: [Function: emitRequestTimeout],
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'shyra.edgeone.app',
+      protocol: 'https:',
+      _redirectable: [Circular *1],
+      Symbol(shapeMode): false,
+      Symbol(kCapture): false,
+      Symbol(kBytesWritten): 0,
+      Symbol(kNeedDrain): false,
+      Symbol(corked): 0,
+      Symbol(kChunkedBuffer): [],
+      Symbol(kChunkedLength): 0,
+      Symbol(kSocket): [TLSSocket],
+      Symbol(kOutHeaders): [Object: null prototype],
+      Symbol(errored): null,
+      Symbol(kHighWaterMark): 65536,
+      Symbol(kRejectNonStandardBodyWrites): false,
+      Symbol(kUniqueHeaders): null,
+      Symbol(kError): [Error]
+    },
+    _currentUrl: 'https://shyra.edgeone.app/bot-img.jpg',
+    _timeout: null,
+    Symbol(shapeMode): true,
+    Symbol(kCapture): false
+  },
+  cause: Error: connect ECONNREFUSED 43.168.176.154:443
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1645:16) {
+    errno: -111,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '43.168.176.154',
+    port: 443
+  }
+}
+AxiosError: connect ECONNREFUSED 43.168.176.154:443
+    at AxiosError.from (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:1288:24)
+    at RedirectableRequest.handleRequestError (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:3808:25)
+    at RedirectableRequest.emit (node:events:508:28)
+    at eventHandlers.<computed> (/workspaces/mini/node_modules/follow-redirects/index.js:56:24)
+    at ClientRequest.emit (node:events:508:28)
+    at emitErrorEvent (node:_http_client:108:11)
+    at TLSSocket.socketErrorListener (node:_http_client:575:5)
+    at TLSSocket.emit (node:events:520:35)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at Axios.request (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:5133:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getBuffer (/workspaces/mini/lib/functions.js:10:13)
+    at async Object.function (/workspaces/mini/plugins/menu.js:148:22) {
+  isAxiosError: true,
+  code: 'ECONNREFUSED',
+  config: [Object: null prototype] {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true,
+      advertiseZstdAcceptEncoding: false
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined,
+      DNT: '1',
+      'Upgrade-Insecure-Request': '1',
+      'User-Agent': 'axios/1.17.0',
+      'Accept-Encoding': 'gzip, compress, deflate, br'
+    },
+    method: 'get',
+    url: 'https://shyra.edgeone.app/bot-img.jpg',
+    responseType: 'arraybuffer',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: <ref *1> Writable {
+    _events: {
+      close: undefined,
+      error: [Function: handleRequestError],
+      prefinish: undefined,
+      finish: undefined,
+      drain: undefined,
+      response: [Function: handleResponse],
+      socket: [Array],
+      abort: undefined
+    },
+    _writableState: WritableState {
+      highWaterMark: 65536,
+      length: 0,
+      corked: 0,
+      onwrite: [Function: bound onwrite],
+      writelen: 0,
+      bufferedIndex: 0,
+      pendingcb: 0,
+      Symbol(kState): 17581054,
+      Symbol(kBufferedValue): null,
+      Symbol(kErroredValue): [Error]
+    },
+    _maxListeners: undefined,
+    _options: {
+      maxRedirects: 21,
+      maxBodyLength: Infinity,
+      protocol: 'https:',
+      path: '/bot-img.jpg',
+      method: 'GET',
+      headers: [Object: null prototype],
+      agents: [Object],
+      auth: undefined,
+      family: undefined,
+      beforeRedirect: [Function: dispatchBeforeRedirect],
+      beforeRedirects: [Object: null prototype],
+      http2Options: undefined,
+      hostname: 'shyra.edgeone.app',
+      port: '',
+      agent: undefined,
+      insecureHTTPParser: false,
+      nativeProtocols: [Object],
+      sensitiveHeaders: [],
+      pathname: '/bot-img.jpg'
+    },
+    _ended: true,
+    _ending: true,
+    _redirectCount: 0,
+    _redirects: [],
+    _requestBodyLength: 0,
+    _requestBodyBuffers: [],
+    _eventsCount: 3,
+    _onNativeResponse: [Function (anonymous)],
+    _headerFilter: /^(?:Authorization|Proxy-Authorization|Cookie)$/i,
+    _currentRequest: ClientRequest {
+      _events: [Object: null prototype],
+      _eventsCount: 2,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      destroyed: true,
+      _last: true,
+      chunkedEncoding: false,
+      shouldKeepAlive: true,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: false,
+      sendDate: false,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      strictContentLength: false,
+      _contentLength: 0,
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      _closed: false,
+      _header: 'GET /bot-img.jpg HTTP/1.1\r\n' +
+        'Accept: application/json, text/plain, */*\r\n' +
+        'DNT: 1\r\n' +
+        'Upgrade-Insecure-Request: 1\r\n' +
+        'User-Agent: axios/1.17.0\r\n' +
+        'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+        'Host: shyra.edgeone.app\r\n' +
+        'Connection: keep-alive\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: nop],
+      agent: [Agent],
+      socketPath: undefined,
+      method: 'GET',
+      maxHeaderSize: undefined,
+      insecureHTTPParser: false,
+      joinDuplicateHeaders: undefined,
+      path: '/bot-img.jpg',
+      _ended: false,
+      res: null,
+      aborted: false,
+      timeoutCb: [Function: emitRequestTimeout],
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'shyra.edgeone.app',
+      protocol: 'https:',
+      _redirectable: [Circular *1],
+      Symbol(shapeMode): false,
+      Symbol(kCapture): false,
+      Symbol(kBytesWritten): 0,
+      Symbol(kNeedDrain): false,
+      Symbol(corked): 0,
+      Symbol(kChunkedBuffer): [],
+      Symbol(kChunkedLength): 0,
+      Symbol(kSocket): [TLSSocket],
+      Symbol(kOutHeaders): [Object: null prototype],
+      Symbol(errored): null,
+      Symbol(kHighWaterMark): 65536,
+      Symbol(kRejectNonStandardBodyWrites): false,
+      Symbol(kUniqueHeaders): null,
+      Symbol(kError): [Error]
+    },
+    _currentUrl: 'https://shyra.edgeone.app/bot-img.jpg',
+    _timeout: null,
+    Symbol(shapeMode): true,
+    Symbol(kCapture): false
+  },
+  cause: Error: connect ECONNREFUSED 43.168.176.154:443
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1645:16) {
+    errno: -111,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '43.168.176.154',
+    port: 443
+  }
+}
+✅ Init [173783688188071@lid] MODE = public
+✅ Init [6026560544928@lid] MODE = public
+✅ Init [173783688188071@lid] AUTO_VIEW_STATUS = off
+✅ Init [6026560544928@lid] AUTO_VIEW_STATUS = off
+✅ Init [244216387129476@lid] MODE = public
+✅ Init [158369016983599@lid] MODE = public
+✅ Init [173783688188071@lid] AUTO_LIKE_STATUS = off
+✅ Init [244216387129476@lid] AUTO_VIEW_STATUS = off
+✅ Init [6026560544928@lid] AUTO_LIKE_STATUS = off
+✅ Init [158369016983599@lid] AUTO_VIEW_STATUS = off
+✅ Init [173783688188071@lid] AUTO_RECORDING = off
+✅ Init [244216387129476@lid] AUTO_LIKE_STATUS = off
+✅ Init [6026560544928@lid] AUTO_RECORDING = off
+✅ Init [158369016983599@lid] AUTO_LIKE_STATUS = off
+✅ Init [173783688188071@lid] AUTO_REACT = off
+✅ Init [244216387129476@lid] AUTO_RECORDING = off
+✅ Init [6026560544928@lid] AUTO_REACT = off
+✅ Init [158369016983599@lid] AUTO_RECORDING = off
+✅ Init [173783688188071@lid] PREFIX = .
+✅ Init [244216387129476@lid] AUTO_REACT = off
+✅ Init [6026560544928@lid] PREFIX = .
+✅ Init [158369016983599@lid] AUTO_REACT = off
+✅ Init [173783688188071@lid] ANTI_CALL = on
+✅ Init [244216387129476@lid] PREFIX = .
+✅ Init [6026560544928@lid] ANTI_CALL = on
+Closing open session in favor of incoming prekey bundle
+Closing session: SessionEntry {
+  _chains: {
+    BYg0J9yrbddBvff8SzOSmaf7dqFunnPMysJ3EWAhPjFU: { chainKey: [Object], chainType: 2, messageKeys: {} },
+    'Bc6YHHd1StoEiIvt84GNl0WEMRx0QEAPZDw/qBbUpsVw': { chainKey: [Object], chainType: 1, messageKeys: {} }
+  },
+  registrationId: 187,
+  currentRatchet: {
+    ephemeralKeyPair: {
+      pubKey: <Buffer 05 ce 98 1c 77 75 4a da 04 88 8b ed f3 81 8d 97 45 84 31 1c 74 40 40 0f 64 3c 3f a8 16 d4 a6 c5 70>,
+      privKey: <Buffer e0 7d c4 90 e5 db 81 f9 83 61 4d fe 77 f0 f9 94 71 35 66 b5 e2 c8 ae df cc ac 52 d4 c5 69 f9 7f>
+    },
+    lastRemoteEphemeralKey: <Buffer 05 88 34 27 dc ab 6d d7 41 bd f7 fc 4b 33 92 99 a7 fb 76 a1 6e 9e 73 cc ca c2 77 11 60 21 3e 31 54>,
+    previousCounter: 0,
+    rootKey: <Buffer 8e e9 f4 90 8f 2c bc 65 05 2f 39 51 2f 15 70 2b b1 99 df 03 1a bc dc b0 f4 ef dc b7 57 79 3d fe>
+  },
+  indexInfo: {
+    baseKey: <Buffer 05 8d b5 4d 24 68 7f 7e de 7d 24 d4 06 fd e5 cc de 9e 23 55 39 3f 46 2b 40 e2 37 84 4e 2e 4f 8c 4b>,
+    baseKeyType: 2,
+    closed: -1,
+    used: 1780932427074,
+    created: 1780932427074,
+    remoteIdentityKey: <Buffer 05 8a ca 28 23 c0 1c b4 91 3b 3d 70 09 0a 4c 32 29 f3 6d e4 24 05 cc 3f bb a3 e9 62 19 78 18 0d 4d>
+  }
+}
+Closing open session in favor of incoming prekey bundle
+Closing session: SessionEntry {
+  _chains: {
+    'BRDZgg3Ju4odDhsfoFEi7WLn8ezixL78Ke/oOQSwQa1a': { chainKey: [Object], chainType: 2, messageKeys: {} },
+    BVSGSU6qIlhqYetkTQDioEAd7iUrDVdAQxNI0zd5r7gi: { chainKey: [Object], chainType: 1, messageKeys: {} }
+  },
+  registrationId: 205,
+  currentRatchet: {
+    ephemeralKeyPair: {
+      pubKey: <Buffer 05 54 86 49 4e aa 22 58 6a 61 eb 64 4d 00 e2 a0 40 1d ee 25 2b 0d 57 40 43 13 48 d3 37 79 af b8 22>,
+      privKey: <Buffer f8 75 8c 05 e4 98 23 cf 01 b9 57 74 a0 c9 9f e6 c7 bd 25 2b 16 03 7e 35 a4 ab 3f bb 67 07 22 65>
+    },
+    lastRemoteEphemeralKey: <Buffer 05 10 d9 82 0d c9 bb 8a 1d 0e 1b 1f a0 51 22 ed 62 e7 f1 ec e2 c4 be fc 29 ef e8 39 04 b0 41 ad 5a>,
+    previousCounter: 0,
+    rootKey: <Buffer 27 7a 21 aa e8 16 93 2c a4 cb 2e 57 ed ce 15 28 ab 0b 7c 48 a6 16 7e 24 20 bf 2f f4 c5 a0 4f ad>
+  },
+  indexInfo: {
+    baseKey: <Buffer 05 7c c2 4b 83 a2 18 08 0d 4c fb 97 22 ee 5e ed 80 71 b3 b0 81 7d 14 d5 51 ee ed d7 80 0a 3b 40 05>,
+    baseKeyType: 2,
+    closed: -1,
+    used: 1780932427334,
+    created: 1780932427334,
+    remoteIdentityKey: <Buffer 05 41 36 76 6a c0 c8 1f f5 7c e5 f9 0d 1c cf 36 7b f9 82 2e 53 69 6b 01 69 25 1f 91 82 34 89 ff 4e>
+  }
+}
+✅ Init [158369016983599@lid] PREFIX = .
+Closing open session in favor of incoming prekey bundle
+Closing session: SessionEntry {
+  _chains: {
+    'BQsgS/57fOXk7eKIjb75GPhVLGel4RlrZgRaL3hbFb9z': { chainKey: [Object], chainType: 2, messageKeys: {} },
+    BaEbtMKK68VMtfY41sbWKNY7b14PjFe7MfLaQHpziyxY: { chainKey: [Object], chainType: 1, messageKeys: {} }
+  },
+  registrationId: 19,
+  currentRatchet: {
+    ephemeralKeyPair: {
+      pubKey: <Buffer 05 a1 1b b4 c2 8a eb c5 4c b5 f6 38 d6 c6 d6 28 d6 3b 6f 5e 0f 8c 57 bb 31 f2 da 40 7a 73 8b 2c 58>,
+      privKey: <Buffer 70 08 d4 71 74 3f f7 e5 e5 db de 73 4d 61 3e d5 31 ff f4 4f 43 a0 71 74 9a 90 48 3a ab 32 ce 5d>
+    },
+    lastRemoteEphemeralKey: <Buffer 05 0b 20 4b fe 7b 7c e5 e4 ed e2 88 8d be f9 18 f8 55 2c 67 a5 e1 19 6b 66 04 5a 2f 78 5b 15 bf 73>,
+    previousCounter: 0,
+    rootKey: <Buffer ee 1b bf 60 1c ae ed 98 83 e4 0e 05 22 fd c3 26 be 52 e3 a4 25 1c 78 a1 d4 f1 31 d7 ad 14 26 7d>
+  },
+  indexInfo: {
+    baseKey: <Buffer 05 6b 2a 1a e6 4f e8 4c 10 66 b3 8d 9d b8 1c 6d ac 5b 71 58 13 65 04 f0 79 59 4c 01 da 5b 31 6f 36>,
+    baseKeyType: 2,
+    closed: -1,
+    used: 1780932427258,
+    created: 1780932427258,
+    remoteIdentityKey: <Buffer 05 c9 0b 06 a2 46 ff af 44 db 3a bd 3e 3d 43 8e b5 ed ab 15 7c da 30 c5 60 ef 19 04 18 fe 21 de 65>
+  }
+}
+✅ Init [173783688188071@lid] ANTI_DELETE = on
+✅ Init [6026560544928@lid] ANTI_DELETE = on
+✅ Init [244216387129476@lid] ANTI_CALL = on
+✅ Init [158369016983599@lid] ANTI_CALL = on
+✅ Init [169961234387007@lid] MODE = public
+✅ Init [110909661945968@lid] MODE = public
+✅ Init [173783688188071@lid] ANTI_EDIT = off
+Closing open session in favor of incoming prekey bundle
+Closing session: SessionEntry {
+  _chains: {
+    'BVB1HYeTo/9NiSnfR4Ntg3HyS+WBDK04dG0ptayZtXRv': { chainKey: [Object], chainType: 2, messageKeys: {} },
+    Bf2Nbhn4x6J5atfHSyyUjsro0IJhJVXtJq58IWoBRkl3: { chainKey: [Object], chainType: 1, messageKeys: {} }
+  },
+  registrationId: 179,
+  currentRatchet: {
+    ephemeralKeyPair: {
+      pubKey: <Buffer 05 fd 8d 6e 19 f8 c7 a2 79 6a d7 c7 4b 2c 94 8e ca e8 d0 82 61 25 55 ed 26 ae 7c 21 6a 01 46 49 77>,
+      privKey: <Buffer 28 48 83 86 4f 0b 98 65 65 f4 5c 31 5b 69 78 cd 8a ac cf ef 0f de cf 12 1e 8c 59 d4 1e 7a 4a 50>
+    },
+    lastRemoteEphemeralKey: <Buffer 05 50 75 1d 87 93 a3 ff 4d 89 29 df 47 83 6d 83 71 f2 4b e5 81 0c ad 38 74 6d 29 b5 ac 99 b5 74 6f>,
+    previousCounter: 0,
+    rootKey: <Buffer b6 94 73 88 2e 99 6a fa b8 0d 28 31 69 b7 2a 2b 96 6f d9 3f ce 16 17 04 6a ea 26 60 29 56 ed 18>
+  },
+  indexInfo: {
+    baseKey: <Buffer 05 e2 32 bd 88 e1 52 d8 4d c6 d4 83 7c d3 e9 3c 90 15 cc 63 00 0d de 80 09 0a 6a 0c 57 66 d7 08 2f>,
+    baseKeyType: 2,
+    closed: -1,
+    used: 1780932427409,
+    created: 1780932427409,
+    remoteIdentityKey: <Buffer 05 33 bb 0f 07 0e 3f df 6f a4 34 0b 05 cc ae a9 14 d8 f0 28 37 60 82 79 a7 34 45 46 9d 81 4b b0 5a>
+  }
+}
+✅ Init [244216387129476@lid] ANTI_DELETE = on
+✅ Init [6026560544928@lid] ANTI_EDIT = off
+✅ Init [110909661945968@lid] MODE = public
+✅ Init [190959329489135@lid] MODE = public
+✅ Init [131899016147069@lid] MODE = public
+✅ Init [158369016983599@lid] ANTI_DELETE = on
+✅ Init [169961234387007@lid] AUTO_VIEW_STATUS = off
+✅ Init [110909661945968@lid] AUTO_VIEW_STATUS = off
+✅ Init [173783688188071@lid] PRESENCE_TYPE = on
+✅ Init [244216387129476@lid] ANTI_EDIT = off
+✅ Init [6026560544928@lid] PRESENCE_TYPE = on
+✅ Init [110909661945968@lid] AUTO_VIEW_STATUS = off
+✅ Init [190959329489135@lid] AUTO_VIEW_STATUS = off
+✅ Init [131899016147069@lid] AUTO_VIEW_STATUS = off
+✅ Init [272228566495316@lid] MODE = public
+✅ Init [158369016983599@lid] ANTI_EDIT = off
+✅ Init [30936783712426@lid] MODE = public
+✅ Init [169961234387007@lid] AUTO_LIKE_STATUS = off
+✅ Init [110909661945968@lid] AUTO_LIKE_STATUS = off
+✅ Init [173783688188071@lid] PRESENCE_FAKE = both
+Closing open session in favor of incoming prekey bundle
+Closing session: SessionEntry {
+  _chains: {
+    BaVx0vIiMqPZCrnhvoArQ1mTvWFlG0f6RZDqlw5hVrlt: { chainKey: [Object], chainType: 2, messageKeys: {} },
+    'BRepwqOCUhfSEsloV5GNW+NOx7aZrlNZRpMmQrJ18lUs': { chainKey: [Object], chainType: 1, messageKeys: {} }
+  },
+  registrationId: 193,
+  currentRatchet: {
+    ephemeralKeyPair: {
+      pubKey: <Buffer 05 17 a9 c2 a3 82 52 17 d2 12 c9 68 57 91 8d 5b e3 4e c7 b6 99 ae 53 59 46 93 26 42 b2 75 f2 55 2c>,
+      privKey: <Buffer 20 b3 ad 55 23 e3 3e ed 80 dd e7 44 f9 2b 23 36 12 7d 74 65 ea 0e af d9 67 e1 6f 62 bf 64 2d 5a>
+    },
+    lastRemoteEphemeralKey: <Buffer 05 a5 71 d2 f2 22 32 a3 d9 0a b9 e1 be 80 2b 43 59 93 bd 61 65 1b 47 fa 45 90 ea 97 0e 61 56 b9 6d>,
+    previousCounter: 0,
+    rootKey: <Buffer 93 e7 52 a6 df 24 f5 2c 49 9f 98 dc 49 96 97 3d 34 fa e9 cc 25 4e ea f7 fd c3 a4 b0 76 97 59 df>
+  },
+  indexInfo: {
+    baseKey: <Buffer 05 57 7b 8b 85 74 b5 50 1e 03 32 4a 79 41 f8 67 97 1d f1 47 24 f7 94 6b 06 bd 21 fa 1a 32 2f ce 5a>,
+    baseKeyType: 2,
+    closed: -1,
+    used: 1780932427201,
+    created: 1780932427201,
+    remoteIdentityKey: <Buffer 05 e1 60 54 84 e4 41 1c 38 7f cf 2e 59 01 b7 97 6a d0 09 1d 18 08 8b 39 27 a3 ec 97 16 a3 bd 60 39>
+  }
+}
+✅ Init [244216387129476@lid] PRESENCE_TYPE = on
+✅ Init [6026560544928@lid] PRESENCE_FAKE = both
+✅ Init [110909661945968@lid] AUTO_LIKE_STATUS = off
+✅ Init [190959329489135@lid] AUTO_LIKE_STATUS = off
+✅ Init [131899016147069@lid] AUTO_LIKE_STATUS = off
+✅ Init [272228566495316@lid] AUTO_VIEW_STATUS = off
+✅ Init [158369016983599@lid] PRESENCE_TYPE = on
+✅ Init [30936783712426@lid] AUTO_VIEW_STATUS = off
+✅ Init [169961234387007@lid] AUTO_RECORDING = off
+✅ Init [110909661945968@lid] AUTO_RECORDING = off
+✅ Init [173783688188071@lid] STATUS_REACT = ❤️
+✅ Init [244216387129476@lid] PRESENCE_FAKE = both
+✅ Init [6026560544928@lid] STATUS_REACT = ❤️
+✅ Init [110909661945968@lid] AUTO_RECORDING = off
+✅ Init [190959329489135@lid] AUTO_RECORDING = off
+✅ Init [131899016147069@lid] AUTO_RECORDING = off
+✅ Init [272228566495316@lid] AUTO_LIKE_STATUS = off
+✅ Init [158369016983599@lid] PRESENCE_FAKE = both
+✅ Init [30936783712426@lid] AUTO_LIKE_STATUS = off
+✅ Init [169961234387007@lid] AUTO_REACT = off
+✅ Init [110909661945968@lid] AUTO_REACT = off
+✅ Init [158673959702546@lid] MODE = public
+✅ Init [173783688188071@lid] ANTI_FAKE = off
+✅ Init [244216387129476@lid] STATUS_REACT = ❤️
+✅ Init [6026560544928@lid] ANTI_FAKE = off
+✅ Init [110909661945968@lid] AUTO_REACT = off
+✅ Init [190959329489135@lid] AUTO_REACT = off
+✅ Init [131899016147069@lid] AUTO_REACT = off
+✅ Init [158369016983599@lid] STATUS_REACT = ❤️
+✅ Init [272228566495316@lid] AUTO_RECORDING = off
+✅ Init [30936783712426@lid] AUTO_RECORDING = off
+✅ Init [169961234387007@lid] PREFIX = .
+✅ Init [110909661945968@lid] PREFIX = .
+✅ Init [158673959702546@lid] AUTO_VIEW_STATUS = off
+✅ Init [173783688188071@lid] WELCOME = off
+✅ Init [244216387129476@lid] ANTI_FAKE = off
+✅ Init [6026560544928@lid] WELCOME = off
+✅ Init [110909661945968@lid] PREFIX = .
+✅ Init [190959329489135@lid] PREFIX = .
+✅ Init [131899016147069@lid] PREFIX = .
+✅ Init [158369016983599@lid] ANTI_FAKE = off
+✅ Init [272228566495316@lid] AUTO_REACT = off
+✅ Init [30936783712426@lid] AUTO_REACT = off
+✅ Init [110909661945968@lid] ANTI_CALL = on
+✅ Init [169961234387007@lid] ANTI_CALL = on
+✅ Init [158673959702546@lid] AUTO_LIKE_STATUS = off
+✅ Init [173783688188071@lid] AUTO_REPLY = off
+✅ Init [244216387129476@lid] WELCOME = off
+✅ Init [6026560544928@lid] AUTO_REPLY = off
+✅ Init [110909661945968@lid] ANTI_CALL = on
+✅ Init [190959329489135@lid] ANTI_CALL = on
+✅ Init [131899016147069@lid] ANTI_CALL = on
+✅ Init [158369016983599@lid] WELCOME = off
+✅ Init [272228566495316@lid] PREFIX = .
+✅ Init [30936783712426@lid] PREFIX = .
+✅ Init [110909661945968@lid] ANTI_DELETE = on
+✅ Init [169961234387007@lid] ANTI_DELETE = on
+✅ Init [158673959702546@lid] AUTO_RECORDING = off
+✅ Init [173783688188071@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [244216387129476@lid] AUTO_REPLY = off
+✅ Init [6026560544928@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [110909661945968@lid] ANTI_DELETE = on
+✅ Init [190959329489135@lid] ANTI_DELETE = on
+✅ Init [131899016147069@lid] ANTI_DELETE = on
+✅ Init [158369016983599@lid] AUTO_REPLY = off
+✅ Init [272228566495316@lid] ANTI_CALL = on
+✅ Init [110909661945968@lid] ANTI_EDIT = off
+✅ Init [30936783712426@lid] ANTI_CALL = on
+✅ Init [169961234387007@lid] ANTI_EDIT = off
+✅ Init [158673959702546@lid] AUTO_REACT = off
+✅ Init [173783688188071@lid] GOODBYE = off
+✅ Init [244216387129476@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [6026560544928@lid] GOODBYE = off
+✅ Init [110909661945968@lid] ANTI_EDIT = off
+✅ Init [190959329489135@lid] ANTI_EDIT = off
+✅ Init [131899016147069@lid] ANTI_EDIT = off
+✅ Init [158369016983599@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+Closing open session in favor of incoming prekey bundle
+Closing session: SessionEntry {
+  _chains: {
+    'BcBf3gTsWii7dIRXWNlzpo5oStNWF+MMHiujzYZxg081': { chainKey: [Object], chainType: 2, messageKeys: {} },
+    'BUUmeoibgRPrkPT5HVz6S/r/0ePb0nWnoG/N5nHfJ/hC': { chainKey: [Object], chainType: 1, messageKeys: {} }
+  },
+  registrationId: 79,
+  currentRatchet: {
+    ephemeralKeyPair: {
+      pubKey: <Buffer 05 45 26 7a 88 9b 81 13 eb 90 f4 f9 1d 5c fa 4b fa ff d1 e3 db d2 75 a7 a0 6f cd e6 71 df 27 f8 42>,
+      privKey: <Buffer 50 40 cf da a0 73 b1 00 3f ad 38 85 f8 bc d0 65 d9 e1 54 07 51 ed 58 df 17 15 ae 48 c4 86 d8 57>
+    },
+    lastRemoteEphemeralKey: <Buffer 05 c0 5f de 04 ec 5a 28 bb 74 84 57 58 d9 73 a6 8e 68 4a d3 56 17 e3 0c 1e 2b a3 cd 86 71 83 4f 35>,
+    previousCounter: 0,
+    rootKey: <Buffer e4 b6 a3 fd 07 60 d5 71 ee c8 b5 13 3a 83 a0 bb e0 b4 18 a1 82 89 ec ed 01 e8 43 22 e1 34 4c 6e>
+  },
+  indexInfo: {
+    baseKey: <Buffer 05 76 3d 8a 8d 72 8e 4d 3b 17 83 22 a2 ad 4b d2 13 15 8a 32 92 86 ae 9a 38 03 1b e6 78 68 04 e8 18>,
+    baseKeyType: 2,
+    closed: -1,
+    used: 1780932427395,
+    created: 1780932427395,
+    remoteIdentityKey: <Buffer 05 6f dc 2c 8c 3b 45 f0 7b b0 f0 eb f3 12 36 a8 a0 78 53 f0 b7 2d a2 a1 33 b3 5c b1 3a 08 25 aa 28>
+  }
+}
+✅ Init [272228566495316@lid] ANTI_DELETE = on
+✅ Init [110909661945968@lid] PRESENCE_TYPE = on
+✅ Init [30936783712426@lid] ANTI_DELETE = on
+✅ Init [169961234387007@lid] PRESENCE_TYPE = on
+✅ Init [158673959702546@lid] PREFIX = .
+✅ Init [173783688188071@lid] CREATE_NB = 173783688188071@lid
+✅ Init [244216387129476@lid] GOODBYE = off
+✅ Init [6026560544928@lid] CREATE_NB = 6026560544928@lid
+✅ Init [190959329489135@lid] PRESENCE_TYPE = on
+✅ Init [110909661945968@lid] PRESENCE_TYPE = on
+✅ Init [131899016147069@lid] PRESENCE_TYPE = on
+✅ Init [158369016983599@lid] GOODBYE = off
+⚙️ Settings loaded: 173783688188071@lid
+⚙️ Settings loaded: 6026560544928@lid
+✅ Init [110909661945968@lid] PRESENCE_FAKE = both
+✅ Init [272228566495316@lid] ANTI_EDIT = off
+✅ Init [30936783712426@lid] ANTI_EDIT = off
+✅ Init [169961234387007@lid] PRESENCE_FAKE = both
+✅ Init [158673959702546@lid] ANTI_CALL = on
+✅ Init [244216387129476@lid] CREATE_NB = 244216387129476@lid
+✅ Init [190959329489135@lid] PRESENCE_FAKE = both
+✅ Init [131899016147069@lid] PRESENCE_FAKE = both
+✅ Init [158369016983599@lid] CREATE_NB = 158369016983599@lid
+⚙️ Settings loaded: 244216387129476@lid
+✅ Init [110909661945968@lid] STATUS_REACT = ❤️
+✅ Init [110909661945968@lid] STATUS_REACT = ❤️
+✅ Init [272228566495316@lid] PRESENCE_TYPE = on
+✅ Init [30936783712426@lid] PRESENCE_TYPE = on
+✅ Init [169961234387007@lid] STATUS_REACT = ❤️
+⚙️ Settings loaded: 158369016983599@lid
+✅ Init [158673959702546@lid] ANTI_DELETE = on
+✅ Init [190959329489135@lid] STATUS_REACT = ❤️
+✅ Init [131899016147069@lid] STATUS_REACT = ❤️
+✅ Init [110909661945968@lid] ANTI_FAKE = off
+✅ Init [110909661945968@lid] ANTI_FAKE = off
+✅ Init [272228566495316@lid] PRESENCE_FAKE = both
+✅ Init [30936783712426@lid] PRESENCE_FAKE = both
+✅ Init [169961234387007@lid] ANTI_FAKE = off
+✅ Init [158673959702546@lid] ANTI_EDIT = off
+✅ Init [131899016147069@lid] ANTI_FAKE = off
+✅ Init [190959329489135@lid] ANTI_FAKE = off
+✅ Init [110909661945968@lid] WELCOME = off
+✅ Init [110909661945968@lid] WELCOME = off
+✅ Init [272228566495316@lid] STATUS_REACT = ❤️
+✅ Init [30936783712426@lid] STATUS_REACT = ❤️
+✅ Init [169961234387007@lid] WELCOME = off
+✅ Init [158673959702546@lid] PRESENCE_TYPE = on
+✅ Init [131899016147069@lid] WELCOME = off
+✅ Init [190959329489135@lid] WELCOME = off
+✅ Init [110909661945968@lid] AUTO_REPLY = off
+✅ Init [110909661945968@lid] AUTO_REPLY = off
+✅ Init [272228566495316@lid] ANTI_FAKE = off
+✅ Init [30936783712426@lid] ANTI_FAKE = off
+✅ Init [169961234387007@lid] AUTO_REPLY = off
+✅ Init [158673959702546@lid] PRESENCE_FAKE = both
+✅ Init [131899016147069@lid] AUTO_REPLY = off
+✅ Init [190959329489135@lid] AUTO_REPLY = off
+✅ Init [110909661945968@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [110909661945968@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [272228566495316@lid] WELCOME = off
+✅ Init [169961234387007@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [30936783712426@lid] WELCOME = off
+✅ Init [158673959702546@lid] STATUS_REACT = ❤️
+✅ Init [131899016147069@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [190959329489135@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [110909661945968@lid] GOODBYE = off
+✅ Init [110909661945968@lid] GOODBYE = off
+✅ Init [272228566495316@lid] AUTO_REPLY = off
+✅ Init [30936783712426@lid] AUTO_REPLY = off
+✅ Init [169961234387007@lid] GOODBYE = off
+✅ Init [131899016147069@lid] GOODBYE = off
+✅ Init [158673959702546@lid] ANTI_FAKE = off
+✅ Init [190959329489135@lid] GOODBYE = off
+✅ Init [110909661945968@lid] CREATE_NB = 110909661945968@lid
+✅ Init [110909661945968@lid] CREATE_NB = 110909661945968@lid
+✅ Init [272228566495316@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [169961234387007@lid] CREATE_NB = 169961234387007@lid
+✅ Init [30936783712426@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [131899016147069@lid] CREATE_NB = 131899016147069@lid
+⚙️ Settings loaded: 110909661945968@lid
+✅ Init [190959329489135@lid] CREATE_NB = 190959329489135@lid
+✅ Init [158673959702546@lid] WELCOME = off
+⚙️ Settings loaded: 110909661945968@lid
+⚙️ Settings loaded: 169961234387007@lid
+⚙️ Settings loaded: 131899016147069@lid
+⚙️ Settings loaded: 190959329489135@lid
+✅ Init [272228566495316@lid] GOODBYE = off
+✅ Init [30936783712426@lid] GOODBYE = off
+✅ Init [158673959702546@lid] AUTO_REPLY = off
+✅ Init [272228566495316@lid] CREATE_NB = 272228566495316@lid
+✅ Init [30936783712426@lid] CREATE_NB = 30936783712426@lid
+✅ Init [158673959702546@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+⚙️ Settings loaded: 272228566495316@lid
+⚙️ Settings loaded: 30936783712426@lid
+✅ Init [158673959702546@lid] GOODBYE = off
+✅ Init [158673959702546@lid] CREATE_NB = 158673959702546@lid
+⚙️ Settings loaded: 158673959702546@lid
+getUserEnv failed for 44015294673005@lid MODE: Client network socket disconnected before secure TLS connection was established
+✅ Init [44015294673005@lid] MODE = public
+✅ Init [44015294673005@lid] AUTO_VIEW_STATUS = off
+✅ Init [44015294673005@lid] AUTO_LIKE_STATUS = off
+✅ Init [44015294673005@lid] AUTO_RECORDING = off
+✅ Init [44015294673005@lid] AUTO_REACT = off
+✅ Init [44015294673005@lid] PREFIX = .
+✅ Init [44015294673005@lid] ANTI_CALL = on
+✅ Init [44015294673005@lid] ANTI_DELETE = on
+✅ Init [44015294673005@lid] ANTI_EDIT = off
+Closing open session in favor of incoming prekey bundle
+Closing session: SessionEntry {
+  _chains: {
+    BQIF58OcEdZEXZ5HddR1Cs0pUzpkC39EqKdfXrNuUrtj: { chainKey: [Object], chainType: 2, messageKeys: {} },
+    'BVLJU619iP4j+Ad19yxa1UAohHud9kVkp/iSeiAzoSxh': { chainKey: [Object], chainType: 1, messageKeys: {} }
+  },
+  registrationId: 114,
+  currentRatchet: {
+    ephemeralKeyPair: {
+      pubKey: <Buffer 05 52 c9 53 ad 7d 88 fe 23 f8 07 75 f7 2c 5a d5 40 28 84 7b 9d f6 45 64 a7 f8 92 7a 20 33 a1 2c 61>,
+      privKey: <Buffer 80 db 8d ad 29 2c 59 1f 91 44 88 31 df c7 e4 c7 33 ca 5e d3 d8 f9 ea 1a d4 d3 80 ad 84 6a e9 5b>
+    },
+    lastRemoteEphemeralKey: <Buffer 05 02 05 e7 c3 9c 11 d6 44 5d 9e 47 75 d4 75 0a cd 29 53 3a 64 0b 7f 44 a8 a7 5f 5e b3 6e 52 bb 63>,
+    previousCounter: 0,
+    rootKey: <Buffer aa 43 b2 c9 57 44 b8 33 67 54 f7 fd 8b 72 72 91 3b 92 85 e4 78 f4 e3 7e 0e 2b 64 bc 50 1a eb ae>
+  },
+  indexInfo: {
+    baseKey: <Buffer 05 75 72 bb 76 d7 0e f5 ca b1 a7 6b d4 17 cc b5 f4 87 09 6a a5 30 6a 60 ee 26 12 22 e6 d8 5f 38 1f>,
+    baseKeyType: 2,
+    closed: -1,
+    used: 1780932427184,
+    created: 1780932427184,
+    remoteIdentityKey: <Buffer 05 51 90 23 5a d0 d1 e6 e5 39 59 9c 3f ea 9f eb 69 84 f1 81 a4 e4 68 34 af 44 b0 84 dc 6e e4 56 3e>
+  }
+}
+✅ Init [44015294673005@lid] PRESENCE_TYPE = on
+✅ Init [210960254009349@lid] MODE = public
+✅ Init [44015294673005@lid] PRESENCE_FAKE = both
+✅ Init [210960254009349@lid] AUTO_VIEW_STATUS = off
+✅ Init [44015294673005@lid] STATUS_REACT = ❤️
+✅ Init [210960254009349@lid] AUTO_LIKE_STATUS = off
+✅ Init [44015294673005@lid] ANTI_FAKE = off
+✅ Init [210960254009349@lid] AUTO_RECORDING = off
+✅ Init [44015294673005@lid] WELCOME = off
+💾 𝐒aved: dina_94788724423
+✅ Init [210960254009349@lid] AUTO_REACT = off
+✅ Init [44015294673005@lid] AUTO_REPLY = off
+✅ Init [210960254009349@lid] PREFIX = .
+✅ Init [44015294673005@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [210960254009349@lid] ANTI_CALL = on
+✅ Init [44015294673005@lid] GOODBYE = off
+✅ Init [210960254009349@lid] ANTI_DELETE = on
+✅ Init [44015294673005@lid] CREATE_NB = 44015294673005@lid
+⚙️ Settings loaded: 44015294673005@lid
+✅ Init [210960254009349@lid] ANTI_EDIT = off
+getUserEnv failed for 216767569883278@lid MODE: Client network socket disconnected before secure TLS connection was established
+✅ Init [216767569883278@lid] MODE = public
+✅ Init [210960254009349@lid] PRESENCE_TYPE = on
+✅ Init [216767569883278@lid] AUTO_VIEW_STATUS = off
+✅ Init [210960254009349@lid] PRESENCE_FAKE = both
+✅ Init [216767569883278@lid] AUTO_LIKE_STATUS = off
+✅ Init [210960254009349@lid] STATUS_REACT = ❤️
+✅ Init [216767569883278@lid] AUTO_RECORDING = off
+✅ Init [210960254009349@lid] ANTI_FAKE = off
+✅ Init [210960254009349@lid] WELCOME = off
+✅ Init [216767569883278@lid] AUTO_REACT = off
+✅ Init [210960254009349@lid] AUTO_REPLY = off
+✅ Init [216767569883278@lid] PREFIX = .
+✅ Init [210960254009349@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [216767569883278@lid] ANTI_CALL = on
+✅ Init [210960254009349@lid] GOODBYE = off
+✅ Init [216767569883278@lid] ANTI_DELETE = on
+✅ Init [210960254009349@lid] CREATE_NB = 210960254009349@lid
+✅ Init [216767569883278@lid] ANTI_EDIT = off
+⚙️ Settings loaded: 210960254009349@lid
+✅ Init [216767569883278@lid] PRESENCE_TYPE = on
+✅ Init [216767569883278@lid] PRESENCE_FAKE = both
+✅ Init [216767569883278@lid] STATUS_REACT = ❤️
+✅ Init [216767569883278@lid] ANTI_FAKE = off
+✅ Init [216767569883278@lid] WELCOME = off
+✅ Init [216767569883278@lid] AUTO_REPLY = off
+✅ Init [216767569883278@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [216767569883278@lid] GOODBYE = off
+✅ Init [216767569883278@lid] CREATE_NB = 216767569883278@lid
+⚙️ Settings loaded: 216767569883278@lid
+Closing open session in favor of incoming prekey bundle
+Closing session: SessionEntry {
+  _chains: {
+    'BZaD2nTd3eH+5Ftpxmhdnu1CU8c6DPEgSlLH12QdFEg0': { chainKey: [Object], chainType: 2, messageKeys: {} },
+    'BenFF51Swg+b76hL/sh+u7vAduP4+9o80o0lS165AbcE': { chainKey: [Object], chainType: 1, messageKeys: {} }
+  },
+  registrationId: 149,
+  currentRatchet: {
+    ephemeralKeyPair: {
+      pubKey: <Buffer 05 e9 c5 17 9d 52 c2 0f 9b ef a8 4b fe c8 7e bb bb c0 76 e3 f8 fb da 3c d2 8d 25 4b 5e b9 01 b7 04>,
+      privKey: <Buffer e0 4d 35 cf 63 f1 b5 78 52 d3 a0 44 74 c8 0d 07 69 d2 43 46 4a a9 ae 06 f3 59 c0 77 c0 47 ec 48>
+    },
+    lastRemoteEphemeralKey: <Buffer 05 96 83 da 74 dd dd e1 fe e4 5b 69 c6 68 5d 9e ed 42 53 c7 3a 0c f1 20 4a 52 c7 d7 64 1d 14 48 34>,
+    previousCounter: 0,
+    rootKey: <Buffer 91 ae 43 f3 48 67 a3 fc e4 94 b6 f3 6d 63 f9 a9 72 43 8c de d2 70 dc f0 4c 16 5f c6 7e d3 05 33>
+  },
+  indexInfo: {
+    baseKey: <Buffer 05 63 1f a6 48 ce 9f e2 e1 d1 14 49 ff 7c fd 0c eb 6b 90 5e ea ad 0c b6 4e fa 51 8f cc 85 4d 69 47>,
+    baseKeyType: 2,
+    closed: -1,
+    used: 1780932427137,
+    created: 1780932427137,
+    remoteIdentityKey: <Buffer 05 23 7e 81 5a 38 3d 6c 06 07 97 f7 97 15 b1 d3 f2 b2 ae a2 e4 4d 0b 2f 5f a7 a7 42 37 a5 c6 fd 1f>
+  }
+}
+✅ Init [231370592927992@lid] MODE = public
+✅ Init [231370592927992@lid] AUTO_VIEW_STATUS = off
+✅ Init [231370592927992@lid] AUTO_LIKE_STATUS = off
+✅ Init [231370592927992@lid] AUTO_RECORDING = off
+✅ Init [231370592927992@lid] AUTO_REACT = off
+✅ Init [231370592927992@lid] PREFIX = .
+✅ Init [231370592927992@lid] ANTI_CALL = on
+✅ Init [231370592927992@lid] ANTI_DELETE = on
+✅ Init [231370592927992@lid] ANTI_EDIT = off
+✅ Init [231370592927992@lid] PRESENCE_TYPE = on
+✅ Init [231370592927992@lid] PRESENCE_FAKE = both
+✅ Init [231370592927992@lid] STATUS_REACT = ❤️
+✅ Init [231370592927992@lid] ANTI_FAKE = off
+✅ Init [231370592927992@lid] WELCOME = off
+✅ Init [231370592927992@lid] AUTO_REPLY = off
+✅ Init [231370592927992@lid] CUSTOM_SONG_FOOTER = ▫️🎵 Check out this group for more songs!
+✅ Init [231370592927992@lid] GOODBYE = off
+✅ Init [231370592927992@lid] CREATE_NB = 231370592927992@lid
+⚙️ Settings loaded: 231370592927992@lid
+⚙️ Settings loaded: 136194067300396@lid
+Closing open session in favor of incoming prekey bundle
+Closing session: SessionEntry {
+  _chains: {
+    'BbIXVrdzjHhYegwkH9+KRgd3wvx01/dtBTTpg4R6sSg/': { chainKey: [Object], chainType: 2, messageKeys: {} },
+    BZfxiC3AU0YAG3n69u6M8ei5lzrgp5NzZxYamddicSVP: { chainKey: [Object], chainType: 1, messageKeys: {} }
+  },
+  registrationId: 154,
+  currentRatchet: {
+    ephemeralKeyPair: {
+      pubKey: <Buffer 05 97 f1 88 2d c0 53 46 00 1b 79 fa f6 ee 8c f1 e8 b9 97 3a e0 a7 93 73 67 16 1a 99 d7 62 71 25 4f>,
+      privKey: <Buffer 18 54 2b 56 36 76 0f a3 f0 72 d1 fb c6 ba e4 85 c6 a9 fc 54 3c 9c 93 60 95 59 4e a5 d7 d8 97 5b>
+    },
+    lastRemoteEphemeralKey: <Buffer 05 b2 17 56 b7 73 8c 78 58 7a 0c 24 1f df 8a 46 07 77 c2 fc 74 d7 f7 6d 05 34 e9 83 84 7a b1 28 3f>,
+    previousCounter: 0,
+    rootKey: <Buffer 75 be 84 2e 7b 72 c6 f0 eb e7 25 88 f9 0c 10 ff 93 c4 95 ce 11 68 a2 b3 fc 03 3c 8a 13 91 f3 cd>
+  },
+  indexInfo: {
+    baseKey: <Buffer 05 a9 f6 a8 37 a1 11 1c 6c f2 74 53 1b 89 59 fb 66 ce e7 fc 75 f3 1c 60 34 79 5a 42 2e 68 be 95 40>,
+    baseKeyType: 2,
+    closed: -1,
+    used: 1780932427427,
+    created: 1780932427427,
+    remoteIdentityKey: <Buffer 05 1a 4a cb e1 29 6d bc 24 0d a1 8f bb 85 25 df 36 6c 43 3d 03 82 02 2f 4e 8f f9 a4 1d 8e 13 73 23>
+  }
+}
+Closing session: SessionEntry {
+  _chains: {
+    'BUFPoFLctIBxNrNhiEUCyO27so/hLBPiinB0UtnVNJR5': { chainKey: [Object], chainType: 2, messageKeys: {} },
+    'BYyBSypXiiB+tP8Dhi9uPFs/lwqet/S1tZl7xKKO10sL': { chainKey: [Object], chainType: 1, messageKeys: {} }
+  },
+  registrationId: 771398381,
+  currentRatchet: {
+    ephemeralKeyPair: {
+      pubKey: <Buffer 05 8c 81 4b 2a 57 8a 20 7e b4 ff 03 86 2f 6e 3c 5b 3f 97 0a 9e b7 f4 b5 b5 99 7b c4 a2 8e d7 4b 0b>,
+      privKey: <Buffer 80 e0 ae ad fe 4c d8 a6 8c ca 12 eb 87 0e 27 ae 51 95 ae 3e d5 91 94 37 2e a3 70 05 da 9b ec 42>
+    },
+    lastRemoteEphemeralKey: <Buffer 05 41 4f a0 52 dc b4 80 71 36 b3 61 88 45 02 c8 ed bb b2 8f e1 2c 13 e2 8a 70 74 52 d9 d5 34 94 79>,
+    previousCounter: 0,
+    rootKey: <Buffer 01 dc 12 80 6d ea f2 6d cf 6a f5 70 92 12 a0 bc ef 63 17 de 34 76 5d eb ba 5a 60 e1 49 cc 7f 69>
+  },
+  indexInfo: {
+    baseKey: <Buffer 05 03 42 f2 4e ee 03 64 39 72 cd e9 ba 53 98 2a 6d 35 35 11 96 0c a7 91 75 bd 42 49 11 bd df 8d 59>,
+    baseKeyType: 1,
+    closed: -1,
+    used: 1780934687093,
+    created: 1780934678921,
+    remoteIdentityKey: <Buffer 05 ba d5 9b 32 47 cd 02 bb fc 2d 06 b1 04 76 aa 04 3f cc 0d b8 bb 00 5e a7 a5 f0 41 80 1e ac af 09>
+  }
+}
+Closing session: SessionEntry {
+  _chains: {
+    BeNWtW33IVR9H0jAtgE0ZulOl8doTYdZJD5bwqsmC7AX: { chainKey: [Object], chainType: 2, messageKeys: {} },
+    'BYKLFEBtww/MKOldFrouz4xBitnuVw2b/OvlmdvJSSZS': { chainKey: [Object], chainType: 2, messageKeys: {} },
+    'BXt9R9EsIStopJ+1rQwHI/vwiMXjaSJuccgehFsoLq5p': { chainKey: [Object], chainType: 2, messageKeys: {} },
+    Be6oV3hSSUs0DSBWsfAkf8XoM0lyllxnbcHzcJACExJN: { chainKey: [Object], chainType: 2, messageKeys: {} },
+    BUyQ3ZAkW4UFhIqeYrUvLeEfrxznoUWXN69vUpLqS4NF: { chainKey: [Object], chainType: 2, messageKeys: {} },
+    'BVZAFWMx8M/vtpS3eQxHZj/0sq871ahL7H6ZNdh/peR2': { chainKey: [Object], chainType: 1, messageKeys: {} }
+  },
+  registrationId: 402407582,
+  currentRatchet: {
+    ephemeralKeyPair: {
+      pubKey: <Buffer 05 56 40 15 63 31 f0 cf ef b6 94 b7 79 0c 47 66 3f f4 b2 af 3b d5 a8 4b ec 7e 99 35 d8 7f a5 e4 76>,
+      privKey: <Buffer 80 99 e0 b3 15 5b c8 66 ac b0 c4 f4 6e ff 09 c0 01 1b 1a a3 4a 84 5f a2 49 32 58 18 d6 98 ed 6a>
+    },
+    lastRemoteEphemeralKey: <Buffer 05 4c 90 dd 90 24 5b 85 05 84 8a 9e 62 b5 2f 2d e1 1f af 1c e7 a1 45 97 37 af 6f 52 92 ea 4b 83 45>,
+    previousCounter: 225,
+    rootKey: <Buffer 02 42 84 07 34 6e 0b 7c a6 7f 2a fe 1c 15 c5 b7 ab 0b 08 36 2c 39 c5 9a f5 bb 77 60 96 33 d5 f9>
+  },
+  indexInfo: {
+    baseKey: <Buffer 05 07 16 c3 c9 07 9d 7e c6 ab 64 3a bf 37 6f 6e e9 23 5b 18 ac 06 8e 96 c5 fd 6f 18 30 5c 86 8e 18>,
+    baseKeyType: 2,
+    closed: -1,
+    used: 1780935486331,
+    created: 1780935417404,
+    remoteIdentityKey: <Buffer 05 8d b5 b4 db 68 a7 0b d0 d5 4c d8 af 33 9c f5 99 05 49 6e 9e 7c b1 1e d2 42 fd bf 4e 8c 31 03 51>
+  }
+}
+⚙️ Settings loaded: 156951493271780@lid
+AxiosError: connect ECONNREFUSED 43.168.176.154:443
+    at AxiosError.from (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:1288:24)
+    at RedirectableRequest.handleRequestError (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:3808:25)
+    at RedirectableRequest.emit (node:events:508:28)
+    at eventHandlers.<computed> (/workspaces/mini/node_modules/follow-redirects/index.js:56:24)
+    at ClientRequest.emit (node:events:508:28)
+    at emitErrorEvent (node:_http_client:108:11)
+    at TLSSocket.socketErrorListener (node:_http_client:575:5)
+    at TLSSocket.emit (node:events:520:35)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at Axios.request (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:5133:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getBuffer (/workspaces/mini/lib/functions.js:10:13)
+    at async sendWithImage (/workspaces/mini/plugins/csong.js:20:24)
+    at async Object.function (/workspaces/mini/plugins/csong.js:229:9) {
+  isAxiosError: true,
+  code: 'ECONNREFUSED',
+  config: [Object: null prototype] {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true,
+      advertiseZstdAcceptEncoding: false
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined,
+      DNT: '1',
+      'Upgrade-Insecure-Request': '1',
+      'User-Agent': 'axios/1.17.0',
+      'Accept-Encoding': 'gzip, compress, deflate, br'
+    },
+    method: 'get',
+    url: 'https://shyra.edgeone.app/bot-img.jpg',
+    responseType: 'arraybuffer',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: <ref *1> Writable {
+    _events: {
+      close: undefined,
+      error: [Function: handleRequestError],
+      prefinish: undefined,
+      finish: undefined,
+      drain: undefined,
+      response: [Function: handleResponse],
+      socket: [Array],
+      abort: undefined
+    },
+    _writableState: WritableState {
+      highWaterMark: 65536,
+      length: 0,
+      corked: 0,
+      onwrite: [Function: bound onwrite],
+      writelen: 0,
+      bufferedIndex: 0,
+      pendingcb: 0,
+      Symbol(kState): 17581054,
+      Symbol(kBufferedValue): null,
+      Symbol(kErroredValue): [Error]
+    },
+    _maxListeners: undefined,
+    _options: {
+      maxRedirects: 21,
+      maxBodyLength: Infinity,
+      protocol: 'https:',
+      path: '/bot-img.jpg',
+      method: 'GET',
+      headers: [Object: null prototype],
+      agents: [Object],
+      auth: undefined,
+      family: undefined,
+      beforeRedirect: [Function: dispatchBeforeRedirect],
+      beforeRedirects: [Object: null prototype],
+      http2Options: undefined,
+      hostname: 'shyra.edgeone.app',
+      port: '',
+      agent: undefined,
+      insecureHTTPParser: false,
+      nativeProtocols: [Object],
+      sensitiveHeaders: [],
+      pathname: '/bot-img.jpg'
+    },
+    _ended: true,
+    _ending: true,
+    _redirectCount: 0,
+    _redirects: [],
+    _requestBodyLength: 0,
+    _requestBodyBuffers: [],
+    _eventsCount: 3,
+    _onNativeResponse: [Function (anonymous)],
+    _headerFilter: /^(?:Authorization|Proxy-Authorization|Cookie)$/i,
+    _currentRequest: ClientRequest {
+      _events: [Object: null prototype],
+      _eventsCount: 2,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      destroyed: true,
+      _last: true,
+      chunkedEncoding: false,
+      shouldKeepAlive: true,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: false,
+      sendDate: false,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      strictContentLength: false,
+      _contentLength: 0,
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      _closed: false,
+      _header: 'GET /bot-img.jpg HTTP/1.1\r\n' +
+        'Accept: application/json, text/plain, */*\r\n' +
+        'DNT: 1\r\n' +
+        'Upgrade-Insecure-Request: 1\r\n' +
+        'User-Agent: axios/1.17.0\r\n' +
+        'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+        'Host: shyra.edgeone.app\r\n' +
+        'Connection: keep-alive\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: nop],
+      agent: [Agent],
+      socketPath: undefined,
+      method: 'GET',
+      maxHeaderSize: undefined,
+      insecureHTTPParser: false,
+      joinDuplicateHeaders: undefined,
+      path: '/bot-img.jpg',
+      _ended: false,
+      res: null,
+      aborted: false,
+      timeoutCb: [Function: emitRequestTimeout],
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'shyra.edgeone.app',
+      protocol: 'https:',
+      _redirectable: [Circular *1],
+      Symbol(shapeMode): false,
+      Symbol(kCapture): false,
+      Symbol(kBytesWritten): 0,
+      Symbol(kNeedDrain): false,
+      Symbol(corked): 0,
+      Symbol(kChunkedBuffer): [],
+      Symbol(kChunkedLength): 0,
+      Symbol(kSocket): [TLSSocket],
+      Symbol(kOutHeaders): [Object: null prototype],
+      Symbol(errored): null,
+      Symbol(kHighWaterMark): 65536,
+      Symbol(kRejectNonStandardBodyWrites): false,
+      Symbol(kUniqueHeaders): null,
+      Symbol(kError): [Error]
+    },
+    _currentUrl: 'https://shyra.edgeone.app/bot-img.jpg',
+    _timeout: null,
+    Symbol(shapeMode): true,
+    Symbol(kCapture): false
+  },
+  cause: Error: connect ECONNREFUSED 43.168.176.154:443
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1645:16) {
+    errno: -111,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '43.168.176.154',
+    port: 443
+  }
+}
+💾 𝐒aved: dina_94788724423
+⚙️ Settings loaded: 120363422991971864@g.us
+AxiosError: connect ECONNREFUSED 43.168.176.154:443
+    at AxiosError.from (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:1288:24)
+    at RedirectableRequest.handleRequestError (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:3808:25)
+    at RedirectableRequest.emit (node:events:508:28)
+    at eventHandlers.<computed> (/workspaces/mini/node_modules/follow-redirects/index.js:56:24)
+    at ClientRequest.emit (node:events:508:28)
+    at emitErrorEvent (node:_http_client:108:11)
+    at TLSSocket.socketErrorListener (node:_http_client:575:5)
+    at TLSSocket.emit (node:events:520:35)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at Axios.request (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:5133:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getBuffer (/workspaces/mini/lib/functions.js:10:13)
+    at async sendWithImage (/workspaces/mini/plugins/play.js:15:24)
+    at async Object.function (/workspaces/mini/plugins/play.js:130:20) {
+  isAxiosError: true,
+  code: 'ECONNREFUSED',
+  config: [Object: null prototype] {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true,
+      advertiseZstdAcceptEncoding: false
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': undefined,
+      DNT: '1',
+      'Upgrade-Insecure-Request': '1',
+      'User-Agent': 'axios/1.17.0',
+      'Accept-Encoding': 'gzip, compress, deflate, br'
+    },
+    method: 'get',
+    url: 'https://shyra.edgeone.app/bot-img.jpg',
+    responseType: 'arraybuffer',
+    allowAbsoluteUrls: true,
+    data: undefined
+  },
+  request: <ref *1> Writable {
+    _events: {
+      close: undefined,
+      error: [Function: handleRequestError],
+      prefinish: undefined,
+      finish: undefined,
+      drain: undefined,
+      response: [Function: handleResponse],
+      socket: [Array],
+      abort: undefined
+    },
+    _writableState: WritableState {
+      highWaterMark: 65536,
+      length: 0,
+      corked: 0,
+      onwrite: [Function: bound onwrite],
+      writelen: 0,
+      bufferedIndex: 0,
+      pendingcb: 0,
+      Symbol(kState): 17581054,
+      Symbol(kBufferedValue): null,
+      Symbol(kErroredValue): [Error]
+    },
+    _maxListeners: undefined,
+    _options: {
+      maxRedirects: 21,
+      maxBodyLength: Infinity,
+      protocol: 'https:',
+      path: '/bot-img.jpg',
+      method: 'GET',
+      headers: [Object: null prototype],
+      agents: [Object],
+      auth: undefined,
+      family: undefined,
+      beforeRedirect: [Function: dispatchBeforeRedirect],
+      beforeRedirects: [Object: null prototype],
+      http2Options: undefined,
+      hostname: 'shyra.edgeone.app',
+      port: '',
+      agent: undefined,
+      insecureHTTPParser: false,
+      nativeProtocols: [Object],
+      sensitiveHeaders: [],
+      pathname: '/bot-img.jpg'
+    },
+    _ended: true,
+    _ending: true,
+    _redirectCount: 0,
+    _redirects: [],
+    _requestBodyLength: 0,
+    _requestBodyBuffers: [],
+    _eventsCount: 3,
+    _onNativeResponse: [Function (anonymous)],
+    _headerFilter: /^(?:Authorization|Proxy-Authorization|Cookie)$/i,
+    _currentRequest: ClientRequest {
+      _events: [Object: null prototype],
+      _eventsCount: 2,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      destroyed: true,
+      _last: true,
+      chunkedEncoding: false,
+      shouldKeepAlive: true,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: false,
+      sendDate: false,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      strictContentLength: false,
+      _contentLength: 0,
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      _closed: false,
+      _header: 'GET /bot-img.jpg HTTP/1.1\r\n' +
+        'Accept: application/json, text/plain, */*\r\n' +
+        'DNT: 1\r\n' +
+        'Upgrade-Insecure-Request: 1\r\n' +
+        'User-Agent: axios/1.17.0\r\n' +
+        'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+        'Host: shyra.edgeone.app\r\n' +
+        'Connection: keep-alive\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: nop],
+      agent: [Agent],
+      socketPath: undefined,
+      method: 'GET',
+      maxHeaderSize: undefined,
+      insecureHTTPParser: false,
+      joinDuplicateHeaders: undefined,
+      path: '/bot-img.jpg',
+      _ended: false,
+      res: null,
+      aborted: false,
+      timeoutCb: [Function: emitRequestTimeout],
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'shyra.edgeone.app',
+      protocol: 'https:',
+      _redirectable: [Circular *1],
+      Symbol(shapeMode): false,
+      Symbol(kCapture): false,
+      Symbol(kBytesWritten): 0,
+      Symbol(kNeedDrain): false,
+      Symbol(corked): 0,
+      Symbol(kChunkedBuffer): [],
+      Symbol(kChunkedLength): 0,
+      Symbol(kSocket): [TLSSocket],
+      Symbol(kOutHeaders): [Object: null prototype],
+      Symbol(errored): null,
+      Symbol(kHighWaterMark): 65536,
+      Symbol(kRejectNonStandardBodyWrites): false,
+      Symbol(kUniqueHeaders): null,
+      Symbol(kError): [Error]
+    },
+    _currentUrl: 'https://shyra.edgeone.app/bot-img.jpg',
+    _timeout: null,
+    Symbol(shapeMode): true,
+    Symbol(kCapture): false
+  },
+  cause: Error: connect ECONNREFUSED 43.168.176.154:443
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1645:16) {
+    errno: -111,
+    code: 'ECONNREFUSED',
+    syscall: 'connect',
+    address: '43.168.176.154',
+    port: 443
+  }
+}
+AxiosError: Request failed with status code 522
+    at settle (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:2090:12)
+    at IncomingMessage.handleStreamEnd (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:3788:11)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at Axios.request (/workspaces/mini/node_modules/axios/dist/node/axios.cjs:5133:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async DY_SCRAP.ytmp3 (/workspaces/mini/node_modules/@dark-yasiya/scrap/src/index.js:1:42111)
+    at async Object.function (/workspaces/mini/plugins/yt-song.js:101:30) {
+  isAxiosError: true,
+  code: 'ERR_BAD_RESPONSE',
+  config: [Object: null prototype] {
+    transitional: {
+      silentJSONParsing: true,
+      forcedJSONParsing: true,
+      clarifyTimeoutError: false,
+      legacyInterceptorReqResOrdering: true,
+      advertiseZstdAcceptEncoding: false
+    },
+    adapter: [ 'xhr', 'http', 'fetch' ],
+    transformRequest: [ [Function: transformRequest] ],
+    transformResponse: [ [Function: transformResponse] ],
+    timeout: 0,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+    maxContentLength: -1,
+    maxBodyLength: -1,
+    env: { FormData: [Function], Blob: [class Blob] },
+    validateStatus: [Function: validateStatus],
+    headers: Object [AxiosHeaders] {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+      'Content-Length': '81',
+      'Accept-Encoding': 'gzip, compress, deflate, br'
+    },
+    method: 'post',
+    url: 'https://api.grabtheclip.com/submit-download',
+    data: '{"url":"https://youtube.com/watch?v=3FaYm8Us42k","height":0,"media_type":"audio"}',
+    allowAbsoluteUrls: true
+  },
+  request: <ref *1> ClientRequest {
+    _events: [Object: null prototype] {
+      abort: [Function (anonymous)],
+      aborted: [Function (anonymous)],
+      connect: [Function (anonymous)],
+      error: [Function (anonymous)],
+      socket: [Function (anonymous)],
+      timeout: [Function (anonymous)],
+      finish: [Function: requestOnFinish]
+    },
+    _eventsCount: 7,
+    _maxListeners: undefined,
+    outputData: [],
+    outputSize: 0,
+    writable: true,
+    destroyed: true,
+    _last: false,
+    chunkedEncoding: false,
+    shouldKeepAlive: true,
+    maxRequestsOnConnectionReached: false,
+    _defaultKeepAlive: true,
+    useChunkedEncodingByDefault: true,
+    sendDate: false,
+    _removedConnection: false,
+    _removedContLen: false,
+    _removedTE: false,
+    strictContentLength: false,
+    _contentLength: 81,
+    _hasBody: true,
+    _trailer: '',
+    finished: true,
+    _headerSent: true,
+    _closed: true,
+    _header: 'POST /submit-download HTTP/1.1\r\n' +
+      'Accept: application/json\r\n' +
+      'Content-Type: application/json\r\n' +
+      'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36\r\n' +
+      'Content-Length: 81\r\n' +
+      'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+      'Host: api.grabtheclip.com\r\n' +
+      'Connection: keep-alive\r\n' +
+      '\r\n',
+    _keepAliveTimeout: 0,
+    _onPendingData: [Function: nop],
+    agent: Agent {
+      _events: [Object: null prototype],
+      _eventsCount: 2,
+      _maxListeners: undefined,
+      options: [Object: null prototype],
+      defaultPort: 443,
+      protocol: 'https:',
+      requests: [Object: null prototype] {},
+      sockets: [Object: null prototype] {},
+      freeSockets: [Object: null prototype],
+      keepAliveMsecs: 1000,
+      keepAlive: true,
+      maxSockets: Infinity,
+      maxFreeSockets: 256,
+      scheduling: 'lifo',
+      maxTotalSockets: Infinity,
+      totalSocketCount: 1,
+      agentKeepAliveTimeoutBuffer: 1000,
+      maxCachedSessions: 100,
+      _sessionCache: [Object],
+      Symbol(shapeMode): false,
+      Symbol(kCapture): false
+    },
+    socketPath: undefined,
+    method: 'POST',
+    maxHeaderSize: undefined,
+    insecureHTTPParser: false,
+    joinDuplicateHeaders: undefined,
+    path: '/submit-download',
+    _ended: true,
+    res: IncomingMessage {
+      _events: [Object],
+      _readableState: [ReadableState],
+      _maxListeners: undefined,
+      socket: null,
+      httpVersionMajor: 1,
+      httpVersionMinor: 1,
+      httpVersion: '1.1',
+      complete: true,
+      rawHeaders: [Array],
+      rawTrailers: [],
+      joinDuplicateHeaders: undefined,
+      aborted: false,
+      upgrade: false,
+      url: '',
+      method: null,
+      statusCode: 522,
+      statusMessage: '<none>',
+      client: [TLSSocket],
+      _consuming: true,
+      _dumped: false,
+      req: [Circular *1],
+      _eventsCount: 4,
+      responseUrl: 'https://api.grabtheclip.com/submit-download',
+      redirects: [],
+      Symbol(shapeMode): true,
+      Symbol(kCapture): false,
+      Symbol(kHeaders): [Object],
+      Symbol(kHeadersCount): 24,
+      Symbol(kTrailers): null,
+      Symbol(kTrailersCount): 0
+    },
+    aborted: false,
+    timeoutCb: null,
+    upgradeOrConnect: false,
+    parser: null,
+    maxHeadersCount: null,
+    reusedSocket: false,
+    host: 'api.grabtheclip.com',
+    protocol: 'https:',
+    _redirectable: Writable {
+      _events: [Object],
+      _writableState: [WritableState],
+      _maxListeners: undefined,
+      _options: [Object],
+      _ended: true,
+      _ending: true,
+      _redirectCount: 0,
+      _redirects: [],
+      _requestBodyLength: 81,
+      _requestBodyBuffers: [],
+      _eventsCount: 4,
+      _onNativeResponse: [Function (anonymous)],
+      _headerFilter: /^(?:Authorization|Proxy-Authorization|Cookie)$/i,
+      _currentRequest: [Circular *1],
+      _currentUrl: 'https://api.grabtheclip.com/submit-download',
+      _timeout: null,
+      Symbol(shapeMode): true,
+      Symbol(kCapture): false
+    },
+    Symbol(shapeMode): false,
+    Symbol(kCapture): false,
+    Symbol(kBytesWritten): 0,
+    Symbol(kNeedDrain): false,
+    Symbol(corked): 0,
+    Symbol(kChunkedBuffer): [],
+    Symbol(kChunkedLength): 0,
+    Symbol(kSocket): TLSSocket {
+      _tlsOptions: [Object],
+      _secureEstablished: true,
+      _securePending: false,
+      _newSessionPending: false,
+      _controlReleased: true,
+      secureConnecting: false,
+      _SNICallback: null,
+      servername: 'api.grabtheclip.com',
+      alpnProtocol: false,
+      authorized: true,
+      authorizationError: null,
+      encrypted: true,
+      _events: [Object: null prototype],
+      _eventsCount: 9,
+      connecting: false,
+      _hadError: false,
+      _parent: null,
+      _host: 'api.grabtheclip.com',
+      _closeAfterHandlingError: false,
+      _readableState: [ReadableState],
+      _writableState: [WritableState],
+      allowHalfOpen: false,
+      _maxListeners: undefined,
+      _sockname: null,
+      _pendingData: null,
+      _pendingEncoding: '',
+      server: undefined,
+      _server: null,
+      ssl: [TLSWrap],
+      _requestCert: true,
+      _rejectUnauthorized: true,
+      timeout: 5000,
+      parser: null,
+      _httpMessage: null,
+      autoSelectFamilyAttemptedAddresses: [Array],
+      Symbol(alpncallback): null,
+      Symbol(res): [TLSWrap],
+      Symbol(verified): true,
+      Symbol(pendingSession): null,
+      Symbol(async_id_symbol): -1,
+      Symbol(kHandle): [TLSWrap],
+      Symbol(lastWriteQueueSize): 0,
+      Symbol(timeout): Timeout {
+        _idleTimeout: 5000,
+        _idlePrev: [TimersList],
+        _idleNext: [TimersList],
+        _idleStart: 317462,
+        _onTimeout: [Function: bound ],
+        _timerArgs: undefined,
+        _repeat: null,
+        _destroyed: false,
+        Symbol(refed): false,
+        Symbol(kHasPrimitive): false,
+        Symbol(asyncId): 59220,
+        Symbol(triggerId): 59218,
+        Symbol(kAsyncContextFrame): undefined
+      },
+      Symbol(kBuffer): null,
+      Symbol(kBufferCb): null,
+      Symbol(kBufferGen): null,
+      Symbol(shapeMode): true,
+      Symbol(kCapture): false,
+      Symbol(kSetNoDelay): false,
+      Symbol(kSetKeepAlive): true,
+      Symbol(kSetKeepAliveInitialDelay): 1,
+      Symbol(kBytesRead): 0,
+      Symbol(kBytesWritten): 0,
+      Symbol(connect-options): [Object],
+      Symbol(axios.http.socketListener): true,
+      Symbol(axios.http.currentReq): [Writable]
+    },
+    Symbol(kOutHeaders): [Object: null prototype] {
+      accept: [Array],
+      'content-type': [Array],
+      'user-agent': [Array],
+      'content-length': [Array],
+      'accept-encoding': [Array],
+      host: [Array]
+    },
+    Symbol(errored): null,
+    Symbol(kHighWaterMark): 65536,
+    Symbol(kRejectNonStandardBodyWrites): false,
+    Symbol(kUniqueHeaders): null
+  },
+  response: {
+    status: 522,
+    statusText: '<none>',
+    headers: Object [AxiosHeaders] {
+      date: 'Mon, 08 Jun 2026 16:21:04 GMT',
+      'content-type': 'application/json; charset=utf-8',
+      'content-length': '979',
+      connection: 'keep-alive',
+      'retry-after': '120',
+      'cache-control': 'private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0',
+      expires: 'Thu, 01 Jan 1970 00:00:01 GMT',
+      'referrer-policy': 'same-origin',
+      'x-frame-options': 'SAMEORIGIN',
+      server: 'cloudflare',
+      'cf-ray': 'a08939c2b98dd966-BOM',
+      'alt-svc': 'h3=":443"; ma=86400'
+    },
+    config: [Object: null prototype] {
+      transitional: [Object],
+      adapter: [Array],
+      transformRequest: [Array],
+      transformResponse: [Array],
+      timeout: 0,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+      maxContentLength: -1,
+      maxBodyLength: -1,
+      env: [Object],
+      validateStatus: [Function: validateStatus],
+      headers: [Object [AxiosHeaders]],
+      method: 'post',
+      url: 'https://api.grabtheclip.com/submit-download',
+      data: '{"url":"https://youtube.com/watch?v=3FaYm8Us42k","height":0,"media_type":"audio"}',
+      allowAbsoluteUrls: true
+    },
+    request: <ref *1> ClientRequest {
+      _events: [Object: null prototype],
+      _eventsCount: 7,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      destroyed: true,
+      _last: false,
+      chunkedEncoding: false,
+      shouldKeepAlive: true,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: true,
+      sendDate: false,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      strictContentLength: false,
+      _contentLength: 81,
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      _closed: true,
+      _header: 'POST /submit-download HTTP/1.1\r\n' +
+        'Accept: application/json\r\n' +
+        'Content-Type: application/json\r\n' +
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36\r\n' +
+        'Content-Length: 81\r\n' +
+        'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+        'Host: api.grabtheclip.com\r\n' +
+        'Connection: keep-alive\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: nop],
+      agent: [Agent],
+      socketPath: undefined,
+      method: 'POST',
+      maxHeaderSize: undefined,
+      insecureHTTPParser: false,
+      joinDuplicateHeaders: undefined,
+      path: '/submit-download',
+      _ended: true,
+      res: [IncomingMessage],
+      aborted: false,
+      timeoutCb: null,
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'api.grabtheclip.com',
+      protocol: 'https:',
+      _redirectable: [Writable],
+      Symbol(shapeMode): false,
+      Symbol(kCapture): false,
+      Symbol(kBytesWritten): 0,
+      Symbol(kNeedDrain): false,
+      Symbol(corked): 0,
+      Symbol(kChunkedBuffer): [],
+      Symbol(kChunkedLength): 0,
+      Symbol(kSocket): [TLSSocket],
+      Symbol(kOutHeaders): [Object: null prototype],
+      Symbol(errored): null,
+      Symbol(kHighWaterMark): 65536,
+      Symbol(kRejectNonStandardBodyWrites): false,
+      Symbol(kUniqueHeaders): null
+    },
+    data: {
+      type: 'https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-522/',
+      title: 'Error 522: Connection timed out',
+      status: 522,
+      detail: 'Cloudflare could not establish a TCP connection to the origin server. The TCP handshake timed out, which may indicate the origin is overloaded, firewalling Cloudflare, or unreachable at the network level.',
+      instance: 'a08939c2b98dd966',
+      error_code: 522,
+      error_name: 'connection_timeout',
+      error_category: 'origin',
+      ray_id: 'a08939c2b98dd966',
+      timestamp: '2026-06-08T16:21:04Z',
+      zone: 'api.grabtheclip.com',
+      cloudflare_error: true,
+      retryable: true,
+      retry_after: 120,
+      owner_action_required: true,
+      what_you_should_do: '**Wait and retry.** Back off for at least 120 seconds. If the error persists, the website operator should verify firewall rules and ensure the origin accepts connections from Cloudflare IP ranges.',
+      footer: 'This error was generated by Cloudflare on behalf of the website owner.'
+    }
+  },
+  status: 522
+}
