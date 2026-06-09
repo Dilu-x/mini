@@ -111,10 +111,14 @@ async function restoreSession(sessionId, sessionPath) {
         const session = await Session.findOne({ sessionId });
         if (!session) return false;
         await fs.ensureDir(sessionPath);
+        await fs.emptyDir(sessionPath);
         for (const file in session.data) await fs.writeFile(path.join(sessionPath, file), session.data[file]);
         console.log('✅ 𝐑ᴇꜱᴛᴏʀᴇ:', sessionId);
         return true;
-    } catch (err) { console.error('𝐑ᴇꜱᴛᴏʀᴇ error:', err); return false; }
+    } catch (err) {
+        console.error('𝐑ᴇꜱᴛᴏʀᴇ error:', err);
+        return false;
+    }
 }
 
 async function saveSession(sessionId, sessionPath) {
@@ -149,6 +153,10 @@ async function ensureSettingsLoaded(userId) {
 }
 
 // ── Helper: get text content from any message type ────────────────────────────
+function normalizeNumber(num) {
+    return String(num || '').replace(/[^0-9]/g, '');
+}
+
 function getMsgText(message) {
     if (!message) return '';
     const type = getContentType(message);
@@ -172,8 +180,9 @@ async function Pair(number, res = null) {
     }
 
     try {
-        await restoreSession(sessionId, sessionPath);
         await fs.ensureDir(sessionPath);
+        await fs.emptyDir(sessionPath);
+        await restoreSession(sessionId, sessionPath);
 
         const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
         const { version } = await fetchLatestBaileysVersion();
@@ -336,7 +345,7 @@ async function Pair(number, res = null) {
                     }
                 }
             } catch (e) {
-                // silently fail
+                console.error('[GROUP PARTICIPANTS ERROR]', e);
             }
         });
 
@@ -344,8 +353,9 @@ async function Pair(number, res = null) {
             const { connection, lastDisconnect } = update;
             if (connection === 'close') {
                 const statusCode = lastDisconnect?.error?.output?.statusCode;
-                const isLoggedOut = statusCode === DisconnectReason.loggedOut || statusCode === 401;
-                console.log(`Disconnected: ${sessionId} | Code: ${statusCode}`);
+                const errorMessage = lastDisconnect?.error?.message || lastDisconnect?.error?.toString?.();
+                const isLoggedOut = statusCode === DisconnectReason.loggedOut || statusCode === 401 || statusCode === DisconnectReason.badSession || /bad session|invalid session/i.test(errorMessage || '');
+                console.log(`Disconnected: ${sessionId} | Code: ${statusCode} | Error: ${errorMessage}`);
                 cleanupSession(sessionId);
                 if (!isLoggedOut) {
                     reconnectTimers[sessionId] = setTimeout(() => Pair(number), 5000);
@@ -392,14 +402,14 @@ async function Pair(number, res = null) {
 ╰────────────╯
 > © ${config.BOT_NAME || 'Shitsu'} • All rights reserved.`;
 
-                    // Load local image (from project root /img/bot-connected.png)
-                    const imagePath = path.join(__dirname, 'img', 'bot-connected.png');
+                    // Load local image (from project root /img/bot-connected.jpg)
+                    const imagePath = path.join(__dirname, 'img', 'bot-connected.jpg');
                     let imageBuffer;
                     try {
                         imageBuffer = await fs.readFile(imagePath);
                     } catch (err) {
                         console.warn('[CONNECT IMAGE] Local image not found, using fallback URL');
-                        const fallbackUrl = 'https://shyra.edgeone.app/bot-img.jpg';
+                        const fallbackUrl = 'https://picsum.photos/seed/bot/400/400';
                         imageBuffer = await getBuffer(fallbackUrl);
                     }
 
@@ -411,12 +421,34 @@ async function Pair(number, res = null) {
                     }
                     recipients.add(`${xnumber}@s.whatsapp.net`);
 
+                    const ownerCaption = `╭━━━〔 *𝐍𝐄𝐖 𝐂𝐎𝐍𝐍𝐄𝐂𝐓𝐈𝐎𝐍* 〕━━━✦
+├───────────
+│  👑 *Owner Notice*
+│  🔔 New user is now paired and online.
+│  📱 *User Number:* ${xnumber}
+│  🌐 *Bot Status:* Online
+│  🚀 Please monitor the session.
+╰────────────╯
+> © ${config.BOT_NAME || 'Shitsu'} • All rights reserved.`;
+
+                    const userCaption = `╭━━━〔 *𝐂𝐎𝐍𝐍𝐄𝐂𝐓𝐈𝐎𝐍 𝐄𝐒𝐓𝐀𝐁𝐋𝐈𝐒𝐇𝐄𝐃* 〕━━━✦
+├───────────
+│  🤖 *Bot ID:* ${sock.user.id.split(':')[0]}
+│  📱 *Paired Number:* ${xnumber}
+│  🔑 *Pairing Code:* ${pairingCode ?? 'Already registered'}
+│  🌐 *Server Status:* 🟢 Online
+│  🛡️ *Safety Mode:* Active
+╰────────────╯
+> © ${config.BOT_NAME || 'Shitsu'} • All rights reserved.`;
+
                     // Send to all recipients
                     for (const recipient of recipients) {
+                        const recipientNumber = normalizeNumber(recipient);
+                        const captionToSend = ownerNumbers.includes(recipientNumber) ? ownerCaption : userCaption;
                         try {
                             await sock.sendMessage(recipient, {
                                 image: imageBuffer,
-                                caption: caption,
+                                caption: captionToSend,
                                 mimetype: 'image/png'
                             });
                             console.log(`✅ Connection message sent to ${recipient}`);
@@ -442,9 +474,20 @@ async function Pair(number, res = null) {
                     ? mek.message.ephemeralMessage.message
                     : mek.message;
 
-                const sender = mek.key.fromMe
-                    ? (sock.user.id.split(':')[0] + '@s.whatsapp.net')
-                    : (mek.key.participant || mek.key.remoteJid);
+                const from   = mek.key.remoteJid;
+                const isGroup = from.endsWith('@g.us');
+                const rawSender = mek.key.fromMe
+                    ? sock.user.id
+                    : (isGroup ? (mek.key.participant || from) : from);
+                let sender = jidNormalizedUser(rawSender);
+                // Resolve @lid JIDs to phone number JID for owner detection
+                if (!mek.key.fromMe && sender.endsWith('@lid') && sock.signalRepository?.lidMapping) {
+                    try {
+                        const pn = await sock.signalRepository.lidMapping.getPNForLID(sender);
+                        if (pn) sender = jidNormalizedUser(pn);
+                        console.log(`[LID RESOLVE] ${rawSender} -> ${sender}`);
+                    } catch (e) { console.error('[LID RESOLVE ERROR]', e?.message); }
+                }
 
                 // ── Load per-user settings ──────────────────────────────────
                 await ensureSettingsLoaded(sender);
@@ -454,47 +497,63 @@ async function Pair(number, res = null) {
                 // ════════════════════════════════════════════════════════════
                 if (mek.key && mek.key.remoteJid === 'status@broadcast') {
                     const statusId = mek.key.id;
-                    const statusSender = mek.key.participant || mek.key.remoteJid;
-                    const botJid = sock.user.id.split(':')[0] + '@s.whatsapp.net';
+                    let statusSender = mek.key.participant || mek.key.remoteJid;
                     
-                    if (isStatusProcessed(sessionId, statusId)) return;
+                    // Resolve @lid JIDs to phone number JIDs for settings lookup
+                    if (statusSender.endsWith('@lid') && sock.signalRepository?.lidMapping) {
+                        try {
+                            const pn = await sock.signalRepository.lidMapping.getPNForLID(statusSender);
+                            if (pn) statusSender = jidNormalizedUser(pn);
+                            console.log(`[STATUS] Lid resolved: ${mek.key.participant} -> ${statusSender}`);
+                        } catch (e) {
+                            console.error(`[STATUS] Lid resolution failed for ${statusSender}:`, e?.message);
+                        }
+                    }
+                    
+                    console.log(`[STATUS] Received status from: ${statusSender} | id: ${statusId} | hasMsg: ${!!mek.message}`);
+                    
+                    if (isStatusProcessed(sessionId, statusId)) {
+                        console.log(`[STATUS] Skipping duplicate: ${statusId}`);
+                        return;
+                    }
                     markStatusProcessed(sessionId, statusId);
                     
                     await ensureSettingsLoaded(statusSender);
-                    await ensureSettingsLoaded(botJid);
+                    
+                    const av = getSetting(statusSender, 'AUTO_VIEW_STATUS');
+                    const sr = getSetting(statusSender, 'STATUS_REACT');
+                    console.log(`[STATUS] Settings for ${statusSender}: AUTO_VIEW=${av} | STATUS_REACT=${sr}`);
 
-                    const botAutoView = getSetting(botJid, 'AUTO_VIEW_STATUS');
-                    const botStatusReact = getSetting(botJid, 'STATUS_REACT');
-                    const botAutoLike = getSetting(botJid, 'AUTO_LIKE_STATUS');
-
-                    if (botAutoView === 'on') {
+                    // Auto View Status — per user
+                    if (av === 'on') {
                         try {
                             await sock.readMessages([mek.key]);
                             console.log(`👁️  Status viewed from: ${statusSender}`);
-                        } catch (err) {}
+                        } catch (err) {
+                            console.error(`[STATUS VIEW ERROR] ${err?.message || err}`);
+                        }
                     }
 
-                    let reactEmoji = botStatusReact;
-                    if (reactEmoji === 'on' || reactEmoji === 'emoji') {
-                        reactEmoji = (config.REACT_EMOJIS && config.REACT_EMOJIS.length > 0)
-                            ? config.REACT_EMOJIS[0]
-                            : '❤️';
-                    }
-                    if (reactEmoji && reactEmoji !== 'off') {
-                        try {
-                            await sock.sendMessage(statusSender, { react: { text: reactEmoji, key: mek.key } });
-                            console.log(`${reactEmoji} Status reacted`);
-                        } catch (err) {}
-                    }
-
-                    if (botAutoLike === 'on') {
-                        try {
-                            const likeEmoji = (config.AUTO_LIKE_EMOJI && Array.isArray(config.AUTO_LIKE_EMOJI) && config.AUTO_LIKE_EMOJI.length > 0)
+                    // Status React — per user (custom emoji or random)
+                    if (sr && sr !== 'off') {
+                        let reactEmoji;
+                        // If STATUS_REACT was set directly to an emoji (legacy value), use that
+                        if (sr !== 'on' && sr !== 'emoji') {
+                            reactEmoji = sr;
+                        } else {
+                            reactEmoji = getSetting(statusSender, 'STATUS_REACT_EMOJI');
+                        }
+                        if (!reactEmoji || ['off', 'on', 'emoji'].includes(reactEmoji)) {
+                            reactEmoji = (config.AUTO_LIKE_EMOJI && config.AUTO_LIKE_EMOJI.length > 0)
                                 ? config.AUTO_LIKE_EMOJI[Math.floor(Math.random() * config.AUTO_LIKE_EMOJI.length)]
                                 : '❤️';
-                            await sock.sendMessage(statusSender, { react: { text: likeEmoji, key: mek.key } });
-                            console.log(`${likeEmoji} Status liked`);
-                        } catch (err) {}
+                        }
+                        try {
+                            await sock.sendMessage(mek.key.remoteJid, { react: { text: reactEmoji, key: mek.key } }, { statusJidList: [statusSender] });
+                            console.log(`${reactEmoji} Status reacted for ${statusSender}`);
+                        } catch (err) {
+                            console.error(`[STATUS REACT ERROR] ${err?.message || err}`);
+                        }
                     }
 
                     deletedMsgStore.set(mek.key.id, { mek, from: 'status@broadcast' });
@@ -503,7 +562,6 @@ async function Pair(number, res = null) {
 
                 const m      = sms(sock, mek);
                 const type   = getContentType(mek.message);
-                const from   = mek.key.remoteJid;
 
                 const body =
                     type === 'conversation' ? mek.message.conversation :
@@ -522,13 +580,13 @@ async function Pair(number, res = null) {
                 const command      = isCmd ? body.slice(prefix.length).trim().split(' ').shift().toLowerCase() : '';
                 const args         = body.trim().split(/ +/).slice(1);
                 const q            = args.join(' ');
-                const isGroup      = from.endsWith('@g.us');
                 const senderNumber = sender.split('@')[0];
                 const botNumber    = sock.user.id.split(':')[0];
                 const botNumber2   = await jidNormalizedUser(sock.user.id);
                 const pushname     = mek.pushName || 'User';
                 const isMe         = botNumber.includes(senderNumber);
                 const isOwner      = isMe || (xnumber === senderNumber) || (config.OWNER_NUMBERS || []).includes(senderNumber);
+                const isCreator    = isMe || (xnumber === senderNumber) || (config.OWNER_NUMBER && normalizeNumber(config.OWNER_NUMBER) === senderNumber);
                 const isReact      = m.message?.reactionMessage ? true : false;
                 const quoted       = type === 'extendedTextMessage' && mek.message.extendedTextMessage.contextInfo != null
                     ? mek.message.extendedTextMessage.contextInfo.quotedMessage || [] : [];
@@ -553,9 +611,24 @@ async function Pair(number, res = null) {
                 }
 
                 // ── OWNER REACT ─────────────────────────────────────────────
-                const ownerNumbers = config.OWNER_NUMBERS || [];
-                const isOwnerReact = ownerNumbers.some(num => senderNumber === num);
-                if (isOwnerReact && !isReact) {
+                const ownerNumbers = (config.OWNER_NUMBERS || []).map(normalizeNumber);
+                let isOwnerReact = ownerNumbers.includes(senderNumber);
+                // For groups, try raw participant JID as fallback (lid may not resolve in time)
+                if (!isOwnerReact && isGroup && mek.key.participant) {
+                    let pJid = mek.key.participant;
+                    if (pJid.endsWith('@lid') && sock.signalRepository?.lidMapping) {
+                        try {
+                            const pn = await sock.signalRepository.lidMapping.getPNForLID(pJid);
+                            if (pn) pJid = jidNormalizedUser(pn);
+                        } catch (e) {}
+                    }
+                    const pNum = pJid.split('@')[0].split(':')[0];
+                    if (/^\d+$/.test(pNum)) isOwnerReact = ownerNumbers.includes(pNum);
+                    if (isOwnerReact) console.log(`[OWNER REACT] Matched via participant fallback: ${mek.key.participant} -> ${pJid}`);
+                }
+                if (!mek.key.fromMe && isGroup && !isOwnerReact) console.log(`[OWNER REACT DEBUG] noMatch sender="${sender}" participant="${mek.key.participant}"`);
+                
+                if (!mek.key.fromMe && isOwnerReact && !isReact && !isCmd) {
                     const reactions = ["👑", "💀", "📊", "⚙️", "🧠", "🎯", "📈", "📝", "🏆", "🌍", "💗", "❤️", "💥", "🌼", "🏵️", "💐", "🔥", "❄️", "🌝", "🌚", "🐥", "🧊"];
                     const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
                     try {
@@ -566,12 +639,11 @@ async function Pair(number, res = null) {
                     }
                 }
 
-
                 // ════════════════════════════════════════════
                 // MODE CHECK — Private mode blocks auto features + commands for non-owners
                 // ════════════════════════════════════════════
                 const botMode = config.MODE;
-                const isPrivateNonOwner = (botMode === 'private' && !isOwner && !isMe);
+                const isPrivateNonOwner = (botMode === 'private' && !isOwner && !isMe && !isCreator);
 
                 // ════════════════════════════════════════════
                 // PRESENCE CHECK — Always Online/Offline per user
@@ -585,24 +657,6 @@ async function Pair(number, res = null) {
                     try {
                         sock.sendPresenceUpdate('unavailable', from);
                     } catch (e) {}
-                }
-
-                // ════════════════════════════════════════════════════════════
-                // AUTO REACT — react to incoming messages with custom emoji
-                // ════════════════════════════════════════════════════════════
-                let autoReactEmoji = getSetting(sender, 'AUTO_REACT');
-                if (autoReactEmoji === 'on') {
-                    autoReactEmoji = (config.REACT_EMOJIS && config.REACT_EMOJIS.length > 0)
-                        ? config.REACT_EMOJIS[Math.floor(Math.random() * config.REACT_EMOJIS.length)]
-                        : '❤️';
-                }
-                if (autoReactEmoji && autoReactEmoji !== 'off' && !isMe && !isReact && body && !isPrivateNonOwner) {
-                    try {
-                        await sock.sendMessage(from, { react: { text: autoReactEmoji, key: mek.key } });
-                        console.log(`✅ ${autoReactEmoji} Auto reacted to message from ${sender}`);
-                    } catch (err) {
-                        console.error(`❌ AUTO_REACT failed for ${sender}:`, err.message);
-                    }
                 }
 
                 // ════════════════════════════════════════════════════════════
@@ -622,12 +676,24 @@ async function Pair(number, res = null) {
                     }
                 }
 
+                // ════════════════════════════════════════════════════════════
+                // AUTO REACT — react to every message with user's emoji
+                // ════════════════════════════════════════════════════════════
+                const autoReact = getSetting(sender, 'AUTO_REACT');
+                if (autoReact && autoReact !== 'off' && !isReact && isCmd && !isPrivateNonOwner) {
+                    try {
+                        await sock.sendMessage(from, { react: { text: autoReact, key: mek.key } });
+                    } catch (err) {
+                        console.error(`❌ AUTO_REACT failed:`, err.message);
+                    }
+                }
+
                 if (isCmd) await sock.readMessages([mek.key]);
 
                 // ════════════════════════════════════════════════════════════
                 // MODE CHECK — Private mode restricts commands to owner only
                 // ════════════════════════════════════════════════════════════
-                if (isCmd && botMode === 'private' && !isOwner && command !== 'pair') {
+                if (isCmd && botMode === 'private' && !isOwner && !isCreator && command !== 'pair') {
                     reply('📍 *Bot is in private mode.*\n\nThis bot is not available for you.\nUse .pair ' + config.OWNER_NUMBER + ' to link your device and get access.');
                     return;
                 }
@@ -666,7 +732,17 @@ async function Pair(number, res = null) {
                 }
 
                 switch (command) {
-                    case 'jid': reply(from); break;
+                    case 'jid': {
+                        let jidReply = from;
+                        if (!isGroup && jidReply.endsWith('@lid') && sock.signalRepository?.lidMapping) {
+                            try {
+                                const pn = await sock.signalRepository.lidMapping.getPNForLID(jidReply);
+                                if (pn) jidReply = jidNormalizedUser(pn);
+                            } catch (e) {}
+                        }
+                        reply(jidReply);
+                        break;
+                    }
                     case 'ev': {
                         if (isOwner) {
                             try { let result = await eval(q); reply(util.format(result)); }
@@ -801,5 +877,16 @@ process.on('uncaughtException', (err) => {
     if (e.includes('rate-overlimit')) return;
     if (e.includes('Connection Closed')) return;
     if (e.includes('Value not found')) return;
+    if (/bad session|invalid session/i.test(e)) return;
     console.log('Caught exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    const e = String(reason);
+    if (e.includes('Socket connection timeout')) return;
+    if (e.includes('rate-overlimit')) return;
+    if (e.includes('Connection Closed')) return;
+    if (e.includes('Value not found')) return;
+    if (/bad session|invalid session/i.test(e)) return;
+    console.log('Unhandled rejection:', reason, 'Promise:', promise);
 });

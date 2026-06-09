@@ -75,21 +75,18 @@ async function ensureLoaded(userId) {
 // ── Menu definition unchanged ─────────────────────────────────────
 const settingsDef = [
     { major: 1,  key: 'AUTO_VIEW_STATUS', label: 'Auto View Status', options: ['on','off'],                    cat: '📌 Auto Features' },
-    { major: 2,  key: 'AUTO_LIKE_STATUS', label: 'Auto Like Status', options: ['on','off'],                    cat: '📌 Auto Features' },
-    { major: 3,  key: 'AUTO_RECORDING',   label: 'Auto Recording',    options: ['on','off'],                    cat: '📌 Auto Features' },
-    { major: 4,  key: 'AUTO_REACT',       label: 'Auto React',        options: ['on','off','emoji'],            cat: '📌 Auto Features' },
-    { major: 5,  key: 'ANTI_CALL',        label: 'Anti Call',         options: ['on','off'],                    cat: '🛡️ Anti Features' },
-    { major: 6,  key: 'ANTI_DELETE',      label: 'Anti Delete',       options: ['on','off','inbox','same'],     cat: '🛡️ Anti Features' },
-    { major: 7,  key: 'ANTI_EDIT',        label: 'Anti Edit',         options: ['on','off'],                    cat: '🛡️ Anti Features' },
-    { major: 8,  key: 'ANTI_FAKE',        label: 'Anti Fake',         options: ['on','off'],                    cat: '🛡️ Anti Features' },
-    { major: 9,  key: 'STATUS_REACT',     label: 'Status React',      options: ['on','off','emoji'],            cat: '💬 Status & Presence' },
-    { major: 10, key: 'PRESENCE_TYPE',    label: 'Presence Type',     options: ['on','off'],                    cat: '💬 Status & Presence' },
-    { major: 11, key: 'PRESENCE_FAKE',    label: 'Presence Fake',     options: ['on','off','both'],             cat: '💬 Status & Presence' },
-    { major: 12, key: 'WELCOME',          label: 'Welcome Message',   options: ['on','off'],                    cat: '👥 Group Features' },
-    { major: 13, key: 'GOODBYE',          label: 'Goodbye Message',   options: ['on','off'],                    cat: '👥 Group Features' },
-    { major: 15, key: 'PREFIX',            label: 'Set Prefix',        options: ['value'],                        cat: '🔧 Bot Config' },
-    { major: 16, key: 'AUTO_REPLY',       label: 'Auto Reply',        options: ['on','off'],                    cat: '💬 Auto Reply' },
-    { major: 18, key: 'CUSTOM_SONG_FOOTER', label: 'Custom Song Footer', options: ['value'], cat: '🎵 Custom' }
+    { major: 2,  key: 'AUTO_RECORDING',   label: 'Auto Recording',    options: ['on','off'],                    cat: '📌 Auto Features' },
+    { major: 3,  key: 'AUTO_REACT',       label: 'Auto React',        options: ['on','off','emoji'],            cat: '📌 Auto Features' },
+    { major: 4,  key: 'ANTI_CALL',        label: 'Anti Call',         options: ['on','off'],                    cat: '🛡️ Anti Features' },
+    { major: 5,  key: 'ANTI_DELETE',      label: 'Anti Delete',       options: ['on','off','inbox','same'],     cat: '🛡️ Anti Features' },
+    { major: 6,  key: 'ANTI_EDIT',        label: 'Anti Edit',         options: ['on','off'],                    cat: '🛡️ Anti Features' },
+    { major: 7,  key: 'STATUS_REACT',     label: 'Status React',      options: ['on','off','emoji'],            cat: '💬 Status & Presence' },
+    { major: 8,  key: 'PRESENCE_TYPE',    label: 'Presence Type',     options: ['on','off'],                    cat: '💬 Status & Presence' },
+    { major: 9,  key: 'WELCOME',          label: 'Welcome Message',   options: ['on','off'],                    cat: '👥 Group Features' },
+    { major: 10, key: 'GOODBYE',          label: 'Goodbye Message',   options: ['on','off'],                    cat: '👥 Group Features' },
+    { major: 11, key: 'PREFIX',           label: 'Set Prefix',        options: ['value'],                       cat: '🔧 Bot Config' },
+    { major: 12, key: 'AUTO_REPLY',       label: 'Auto Reply',        options: ['on','off'],                    cat: '💬 Auto Reply' },
+    { major: 13, key: 'CUSTOM_SONG_FOOTER', label: 'Custom Song Footer', options: ['value'], cat: '🎵 Custom' }
 ];
 
 const flatMenu = [];
@@ -279,6 +276,50 @@ cmd({
     } catch (e) {
         console.error('[SETTINGS BODY ERROR]', e);
     }
+ });
+
+// ══════════════════════════════════════════════════════════════════
+// SIMPLE NUMBER REPLY — just reply "1" to toggle setting #1
+// ══════════════════════════════════════════════════════════════════
+const TOGGLE_KEYS = settingsDef.map(d => d.key); // index 0 → reply "1"
+
+cmd({
+    on: "body",
+    dontAddCommandList: true,
+    filename: __filename
+}, async (conn, mek, m, context) => {
+    try {
+        const { body, sender, from } = context;
+        const text = body.trim();
+        const num = parseInt(text, 10);
+        if (isNaN(num) || num < 1 || num > TOGGLE_KEYS.length) return;
+        if (String(num) !== text) return; // exact match only
+
+        const key = TOGGLE_KEYS[num - 1];
+        const def = settingsDef.find(d => d.key === key);
+        if (!def) return;
+        // Only toggle if it's an on/off type (skip 'value' entries like PREFIX)
+        if (def.options.length === 1 && def.options[0] === 'value') return;
+
+        await ensureLoaded(sender);
+        const current = getSetting(sender, key);
+        let next;
+        if (key === 'STATUS_REACT') {
+            next = current === 'on' ? 'off' : current === 'emoji' ? 'on' : 'emoji';
+        } else if (key === 'ANTI_DELETE') {
+            const cycle = { on: 'inbox', inbox: 'same', same: 'off', off: 'on' };
+            next = cycle[current] || 'on';
+        } else {
+            next = current === 'on' ? 'off' : 'on';
+        }
+        await setSetting(sender, key, next);
+        await sendSettingsReply(conn, from, mek, 'SETTINGS TOGGLE', [
+            `✅ *${def.label}* toggled`,
+            `Current: ${fmtVal(next)}`
+        ]);
+    } catch (e) {
+        console.error('[SIMPLE TOGGLE ERROR]', e);
+    }
 });
 
 // ══════════════════════════════════════════════════════════════════
@@ -333,6 +374,28 @@ cmd({
         }
     } catch(e) {
         await sendSettingsReply(conn, from, mek, 'ANTI EDIT', [`❌ ${e.message}`]);
+    }
+});
+
+// Anti Call
+cmd({
+    pattern: "autoreply",
+    alias: ["autorep", "ar"],
+    desc: "Toggle auto reply: on | off",
+    category: "settings", react: "💬", filename: __filename
+}, async (conn, mek, m, { sender, args, from }) => {
+    try {
+        await ensureLoaded(sender);
+        const val = args[0]?.toLowerCase();
+        if (val === 'on' || val === 'off') {
+            await setSetting(sender, 'AUTO_REPLY', val);
+            await sendSettingsReply(conn, from, mek, 'AUTO REPLY', [`${val==='on'?'✅':'❌'} *Auto Reply* → *${val.toUpperCase()}*`]);
+        } else {
+            const nv = await toggleSetting(sender, 'AUTO_REPLY');
+            await sendSettingsReply(conn, from, mek, 'AUTO REPLY', [`${nv==='on'?'✅':'❌'} *Auto Reply* toggled → *${nv.toUpperCase()}*`]);
+        }
+    } catch(e) {
+        await sendSettingsReply(conn, from, mek, 'AUTO REPLY', [`❌ ${e.message}`]);
     }
 });
 
@@ -411,6 +474,28 @@ cmd({
     }
 });
 
+// Always Online
+cmd({
+    pattern: "alwaysonline",
+    alias: ["presence"],
+    desc: "Toggle always online presence: on | off",
+    category: "settings", react: "🟢", filename: __filename
+}, async (conn, mek, m, { sender, args, from }) => {
+    try {
+        await ensureLoaded(sender);
+        const val = args[0]?.toLowerCase();
+        if (val === 'on' || val === 'off') {
+            await setSetting(sender, 'PRESENCE_TYPE', val);
+            await sendSettingsReply(conn, from, mek, 'ALWAYS ONLINE', [`${val==='on'?'✅':'❌'} *Always Online* → *${val.toUpperCase()}*`]);
+        } else {
+            const nv = await toggleSetting(sender, 'PRESENCE_TYPE');
+            await sendSettingsReply(conn, from, mek, 'ALWAYS ONLINE', [`${nv==='on'?'✅':'❌'} *Always Online* toggled → *${nv.toUpperCase()}*`]);
+        }
+    } catch(e) {
+        await sendSettingsReply(conn, from, mek, 'ALWAYS ONLINE', [`❌ ${e.message}`]);
+    }
+});
+
 // Auto View Status
 cmd({
     pattern: "autoviewstatus",
@@ -433,28 +518,6 @@ cmd({
     }
 });
 
-// Auto Like Status
-cmd({
-    pattern: "autelikestatus",
-    alias: ["autolike"],
-    desc: "Auto like status: on | off",
-    category: "settings", react: "❤️", filename: __filename
-}, async (conn, mek, m, { sender, args, from }) => {
-    try {
-        await ensureLoaded(sender);
-        const val = args[0]?.toLowerCase();
-        if (val === 'on' || val === 'off') {
-            await setSetting(sender, 'AUTO_LIKE_STATUS', val);
-            await sendSettingsReply(conn, from, mek, 'AUTO LIKE STATUS', [`${val==='on'?'✅':'❌'} *Auto Like Status* → *${val.toUpperCase()}*`]);
-        } else {
-            const nv = await toggleSetting(sender, 'AUTO_LIKE_STATUS');
-            await sendSettingsReply(conn, from, mek, 'AUTO LIKE STATUS', [`${nv==='on'?'✅':'❌'} *Auto Like Status* toggled → *${nv.toUpperCase()}*`]);
-        }
-    } catch(e) {
-        await sendSettingsReply(conn, from, mek, 'AUTO LIKE STATUS', [`❌ ${e.message}`]);
-    }
-});
-
 // Auto Recording
 cmd({
     pattern: "autorecording",
@@ -474,27 +537,6 @@ cmd({
         }
     } catch(e) {
         await sendSettingsReply(conn, from, mek, 'AUTO RECORDING', [`❌ ${e.message}`]);
-    }
-});
-
-// Anti Fake
-cmd({
-    pattern: "antifake",
-    desc: "Block fake numbers: on | off",
-    category: "settings", react: "🚫", filename: __filename
-}, async (conn, mek, m, { sender, args, from }) => {
-    try {
-        await ensureLoaded(sender);
-        const val = args[0]?.toLowerCase();
-        if (val === 'on' || val === 'off') {
-            await setSetting(sender, 'ANTI_FAKE', val);
-            await sendSettingsReply(conn, from, mek, 'ANTI FAKE', [`${val==='on'?'✅':'❌'} *Anti Fake* → *${val.toUpperCase()}*`]);
-        } else {
-            const nv = await toggleSetting(sender, 'ANTI_FAKE');
-            await sendSettingsReply(conn, from, mek, 'ANTI FAKE', [`${nv==='on'?'✅':'❌'} *Anti Fake* toggled → *${nv.toUpperCase()}*`]);
-        }
-    } catch(e) {
-        await sendSettingsReply(conn, from, mek, 'ANTI FAKE', [`❌ ${e.message}`]);
     }
 });
 
@@ -592,5 +634,93 @@ cmd({
         ]);
     } catch(e) {
         await sendSettingsReply(conn, from, mek, 'BOT MODE', [`❌ ${e.message}`]);
+    }
+});
+
+// ══════════════════════════════════════════════════════════════════
+// REAL-TIME STATUS / ALIVE
+// ══════════════════════════════════════════════════════════════════
+cmd({
+    pattern: "alive",
+    alias: ["status", "runtime", "botinfo"],
+    desc: "Show real-time bot status and runtime",
+    category: "main",
+    react: "🤖",
+    filename: __filename
+}, async (conn, mek, m, { from, reply }) => {
+    try {
+        const uptime = process.uptime();
+        const hours = Math.floor(uptime / 3600);
+        const minutes = Math.floor((uptime % 3600) / 60);
+        const seconds = Math.floor(uptime % 60);
+        const uptimeStr = `${hours}h ${minutes}m ${seconds}s`;
+
+        const memory = process.memoryUsage();
+        const memMB = (memory.rss / 1024 / 1024).toFixed(1);
+        const heapMB = (memory.heapUsed / 1024 / 1024).toFixed(1);
+
+        const plugins = require('../command').commands.length;
+        const nodeVer = process.version;
+        const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+        const lines = [
+            `*┏━━━━━━━━━━━━━━✦*`,
+            `*┃ Bot Name :* ${BOT_NAME}`,
+            getDateTimeLine(),
+            `*┃ Platform :* ALIVE`,
+            `*┗━━━━━━━━━━━━━━✦*`,
+            '',
+            `┏━━━━━━━━━━━━━━✦`,
+            `┃ ⏱ Uptime   : ${uptimeStr}`,
+            `┃ 🕐 Time     : ${now}`,
+            `┃ 📡 Node     : v${nodeVer}`,
+            `┃ 💾 RAM      : ${memMB} MB (heap: ${heapMB} MB)`,
+            `┃ 🔌 Plugins  : ${plugins}`,
+            `┃ 🌐 Mode     : ${(config.MODE || 'private').toUpperCase()}`,
+            `┗━━━━━━━━━━━━━━✦`,
+            '',
+            FOOTER
+        ];
+
+        await sendWithImage(conn, from, mek, SETTINGS_IMG, lines.join('\n'));
+    } catch (e) {
+        await reply(`❌ ${e.message}`);
+    }
+});
+
+// ══════════════════════════════════════════════════════════════════
+// ALL STATUS — per-user settings viewer
+// ══════════════════════════════════════════════════════════════════
+cmd({
+    pattern: "allstatus",
+    alias: ["allsettings", "ownersettings"],
+    desc: "View current user's settings",
+    category: "settings",
+    react: "📊",
+    filename: __filename
+}, async (conn, mek, m, { sender, from, reply }) => {
+    try {
+        await ensureLoaded(sender);
+        const s = getFullSettings(sender);
+        const lines = [];
+
+        const byCat = {};
+        flatMenu.forEach(item => {
+            if (!byCat[item.cat]) byCat[item.cat] = [];
+            byCat[item.cat].push(item);
+        });
+
+        for (const [cat, items] of Object.entries(byCat)) {
+            lines.push(`*${cat}*`);
+            for (const item of items) {
+                const cur = s[item.key] ?? (item.key === 'PREFIX' ? '/' : 'off');
+                lines.push(`┃ ${item.key} : ${fmtVal(cur)}`);
+            }
+            lines.push('');
+        }
+
+        await sendSettingsReply(conn, from, mek, 'YOUR SETTINGS', lines);
+    } catch (e) {
+        await reply(`❌ ${e.message}`);
     }
 });

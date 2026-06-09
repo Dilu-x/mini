@@ -4,13 +4,15 @@ const config = require('../config');   // make sure OWNER_NUMBER & OWNER_NAME ar
 cmd({
     pattern: "owner",
     react: "✅",
-    desc: "Get owner number",
+    desc: "Get owner contact",
     category: "main",
     filename: __filename
 }, async (conn, mek, m, { from, reply }) => {
     try {
         const ownerNumber = config.OWNER_NUMBER;
         const ownerName = config.OWNER_NAME;
+
+        await reply(`👑 *Owner:* ${ownerName}\n📞 *Number:* ${ownerNumber}`);
 
         const vcard = 'BEGIN:VCARD\n' +
                       'VERSION:3.0\n' +
@@ -26,6 +28,6 @@ cmd({
         });
     } catch (error) {
         console.error(error);
-        reply(`An error occurred: ${error.message}`);
+        reply(`❌ Error: ${error.message}`);
     }
 });

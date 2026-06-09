@@ -13,21 +13,18 @@ async function initEnvsettings(userId) {
 }
 
 const settingDefaults = {
-    'MODE':             'public',  // public | private
-    'AUTO_VIEW_STATUS': 'off',
-    'AUTO_LIKE_STATUS': 'off',
+    'MODE':             'public',
     'AUTO_RECORDING':   'off',
-    'AUTO_REACT':       'off',   // off | any emoji e.g. 😂
-    'PREFIX':           '.',     // any symbol: / . ! # $ etc
-    'ANTI_CALL':        'on',    // on | off
-    'ANTI_DELETE':      'on',    // on | off | inbox | same
-    'ANTI_EDIT':        'off',   // on | off
+    'AUTO_VIEW_STATUS': 'off',
+    'STATUS_REACT':     'off',
+    'PREFIX':           '.',
+    'ANTI_CALL':        'on',
+    'ANTI_DELETE':      'on',
+    'ANTI_EDIT':        'off',
+    'AUTO_REACT':       'off',
     'CUSTOM_SONG_FOOTER': '▫️🎵 Check out this group for more songs!',
     'PRESENCE_TYPE':    'on',
-    'PRESENCE_FAKE':    'both',
-    'AUTO_REPLY': 'off',  // 'on' or 'off'
-    'STATUS_REACT':     '❤️',   // off | any emoji
-    'ANTI_FAKE':        'off',
+    'AUTO_REPLY':       'off',
     'WELCOME':          'off',
     'GOODBYE':          'off'
 };

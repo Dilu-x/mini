@@ -38,21 +38,18 @@ async function initUserEnvIfMissing(userId) {
   if (!userId) { console.error("❌ User ID is missing"); return; }
 
   const defaults = {
-    MODE:             "public",  // public | private
-    AUTO_VIEW_STATUS: "off",
-    AUTO_LIKE_STATUS: "off",
+    MODE:             "public",
     AUTO_RECORDING:   "off",
-    AUTO_REACT:       "off",   // off | any emoji e.g. 😂
-    PREFIX:           ".",     // any symbol: / . ! # $ etc
-    ANTI_CALL:        "on",    // on | off
-    ANTI_DELETE:      "on",    // on | off | inbox | same
-    ANTI_EDIT:        "off",   // on | off
+    AUTO_VIEW_STATUS: "off",
+    STATUS_REACT:     "off",
+    PREFIX:           ".",
+    ANTI_CALL:        "on",
+    ANTI_DELETE:      "on",
+    ANTI_EDIT:        "off",
     PRESENCE_TYPE:    "on",
-    PRESENCE_FAKE:    "both",
-    STATUS_REACT:     "❤️",   // off | any emoji
-    ANTI_FAKE:        "off",
     WELCOME:          "off",
-    AUTO_REPLY: "off",
+    AUTO_REPLY:       "off",
+    AUTO_REACT:       "off",
     CUSTOM_SONG_FOOTER: '▫️🎵 Check out this group for more songs!',
     GOODBYE:          "off",
     CREATE_NB:        userId
